@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Movie(models.Model):
     movie_title = models.CharField(max_length=200, verbose_name='Название')
-    movie_image = models.ImageField(upload_to='movieImgs/', verbose_name='Изображение')
+    movie_image = models.ImageField(upload_to='movieImgs/', default='movieImgs/default.jpg', verbose_name='Изображение')
     movie_country = models.CharField(max_length=100, verbose_name='Страна')
     movie_year = models.CharField(max_length=10, verbose_name='Год')
     movie_duration = models.IntegerField(verbose_name='Продолжительность')
