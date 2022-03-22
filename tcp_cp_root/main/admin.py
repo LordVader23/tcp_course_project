@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Genre, Status, Seats, Movie, MovieSession, Booking, Payment
+from .models import Genre, Status, Seats, Movie, Payment, Booking, MovieSession
 
 
 class MovieAdm(admin.ModelAdmin):
@@ -36,7 +36,36 @@ class MovieAdm(admin.ModelAdmin):
     get_genres.short_description = 'Жанры'
 
 
+class BookingAdm(admin.ModelAdmin):
+    list_display = ('booking_owner', 'booking_status',  'booking_code', 'booking_payment',
+                    'get_seats', 'booking_description', 'booking_date')
+    list_display_links = ('booking_owner', )
+    fields = ('booking_owner', 'booking_status',
+              'booking_seats', 'booking_description', 'booking_date')
+    readonly_fields = ('get_seats',)
+    search_fields = ('booking_date', )
+    list_filter = ('booking_status', )
+    list_editable = ('booking_status',)
+    list_per_page = 10
+    list_max_show_all = 100
+
+    def get_seats(self, obj):
+        return ", ".join([str(s.seats_number) for s in obj.booking_seats.all()])
+
+    get_seats.short_description = 'Места'
+
+    # booking_owner
+    # booking_code
+    # booking_payment
+    # booking_seats
+    # booking_session
+    # booking_status
+    # booking_description
+    # booking_date
+
+
 admin.site.register(Movie, MovieAdm)
+admin.site.register(Booking, BookingAdm)
 admin.site.register(Genre)
 admin.site.register(Status)
-# admin.site.register(Seats)
+admin.site.register(Seats)
