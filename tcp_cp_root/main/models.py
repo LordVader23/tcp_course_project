@@ -35,7 +35,7 @@ class MovieSession(models.Model):
     session_movie = models.ForeignKey(Movie, on_delete=models.PROTECT, verbose_name='Сеанс фильма')
     session_date = models.DateTimeField(verbose_name='Дата и время')
     # session_seats = models.ForeignKey("Seats", on_delete=models.PROTECT, verbose_name='Места')
-    session_bookings = models.ManyToManyField("Booking", verbose_name='Бронирования')
+    # session_bookings = models.ManyToManyField("Booking", verbose_name='Бронирования')
 
     def __str__(self):
         return '{} {}'.format(self.session_movie, self.session_date)
@@ -48,10 +48,11 @@ class MovieSession(models.Model):
 class Booking(models.Model):
     booking_owner = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Владелец бронирования')
     booking_code = models.CharField(max_length=50, verbose_name='Уникальный код бронирования')
-    booking_payment = models.ForeignKey('Payment', on_delete=models.PROTECT, verbose_name='Оплата')
+    booking_payment = models.ForeignKey('Payment', on_delete=models.PROTECT, verbose_name='Оплата', null=True)
     booking_seats = models.ManyToManyField("Seats", verbose_name='Бронируемые места')
+    booking_session = models.ForeignKey(MovieSession, on_delete=models.PROTECT, verbose_name='Сеанс', default='0')
     booking_status = models.ForeignKey('Status', on_delete=models.PROTECT, verbose_name='Статус')
-    booking_description = models.CharField(max_length=200, verbose_name='Примечания')
+    booking_description = models.CharField(max_length=200, verbose_name='Примечания', null=True)
     booking_date = models.DateTimeField(verbose_name='Дата и время бронирования')
 
     def __str__(self):
@@ -66,11 +67,12 @@ class Seats(models.Model):
     seats_number = models.IntegerField(verbose_name='Номер места')
 
     def __str__(self):
-        return self.seats_number
+        return str(self.seats_number)
 
     class Meta:
         verbose_name = 'Место'
         verbose_name_plural = 'Места'
+        ordering = ['seats_number']
 
 
 class Status(models.Model):
