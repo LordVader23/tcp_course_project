@@ -17,6 +17,9 @@ class Movie(models.Model):
     def __str__(self):
         return self.movie_title
 
+    def get_genres_str(self):
+        return ', '.join(g.genre_name for g in self.movie_genres.all())
+
     class Meta:
         verbose_name = 'Фильм'
         verbose_name_plural = 'Фильмы'
