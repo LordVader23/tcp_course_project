@@ -1,21 +1,35 @@
-{% extends 'base.html' %}
+{% extends 'main/base.html' %}
 {% load static %}
 
 {% block index %}
 
-<div class="content float-left" style="width: 40%">
-    <div class="filter_block bg-light m-1 p-1 float-left" style="width: 100%">
+<div class="content " style="width: 70%">
+    <div class="filter_block bg-light m-1 p-1 " style="width: 100%">
 <!--    gg    -->
     </div>
 
     <div class="movie_list float-left">
-        <div class="movie_block float-left">
-            <a class="movie_img" href="#">
-                <img src="{{  }}" class=""  alt="...">
+        {% for ms in mss %}
+        <div class="movie_block">
+            <a class="movie_img float-left d-inline-block text-decoration-none" href="{% url 'main:detail' pk=ms.pk %}">
+                <img src="{{ ms.session_movie.movie_image.url }}" class=""  alt="..." width="200px">
             </a>
-
+            <div class="movie_details float-left d-inline-block ">
+                <a href="{% url 'main:detail' pk=ms.pk %}" class="text-decoration-none">
+                    {{ ms.session_movie.movie_title }}
+                </a>
+                <p class="genre">
+                    {{ ms.session_movie.get_genres_str }}
+                </p>
+                <p class="date">
+                    {{ ms.session_movie.movie_year }} год
+                </p>
+            </div>
         </div>
+        <hr>
+        {% endfor %}
     </div>
+
 </div>
 
 {% endblock %}
