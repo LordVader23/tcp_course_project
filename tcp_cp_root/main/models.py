@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+import string
+import random
+
 
 class Movie(models.Model):
     movie_title = models.CharField(max_length=200, verbose_name='Название')
@@ -47,7 +50,7 @@ class MovieSession(models.Model):
 
 class Booking(models.Model):
     booking_owner = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Владелец бронирования')
-    booking_code = models.CharField(max_length=50, verbose_name='Уникальный код бронирования')
+    booking_code = models.CharField(max_length=50, verbose_name='Уникальный код бронирования', default=0)
     booking_payment = models.ForeignKey('Payment', on_delete=models.PROTECT, verbose_name='Оплата', null=True)
     booking_seats = models.ManyToManyField("Seats", verbose_name='Бронируемые места')
     booking_session = models.ForeignKey(MovieSession, on_delete=models.PROTECT, verbose_name='Сеанс', default='0')
@@ -57,6 +60,13 @@ class Booking(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.booking_owner, self.booking_date)
+
+    # def save(self, *args, **kwargs):
+    #     size = 18
+    #     chars = string.ascii_uppercase + string.digits
+    #     self.booking_code = ''.join(random.choice(chars) for _ in range(size))
+    #
+    #     super(Booking, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Бронирование'
