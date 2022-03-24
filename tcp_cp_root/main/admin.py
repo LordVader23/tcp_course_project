@@ -64,8 +64,19 @@ class BookingAdm(admin.ModelAdmin):
     # booking_date
 
 
+class MovieSessionAdm(admin.ModelAdmin):
+    list_display = ('session_movie', 'session_date')
+    list_display_links = ('session_movie',)
+    fields = ('session_movie', 'session_date')
+    list_filter = ('session_movie', 'session_date')
+    list_per_page = 10
+    list_max_show_all = 100
+
+
 admin.site.register(Movie, MovieAdm)
 admin.site.register(Booking, BookingAdm)
+admin.site.register(MovieSession, MovieSessionAdm)
 admin.site.register(Genre)
 admin.site.register(Status)
 admin.site.register(Seats)
+admin.site.register(Payment)
