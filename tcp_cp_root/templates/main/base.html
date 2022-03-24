@@ -16,14 +16,14 @@
 <body>
     <div class="container">
         <nav class="navbar navbar-light bg-light container">
-            <a class="navbar-brand logo-top" href="{% url 'main' %}">
-                <img src="{% static 'img/Logo.png' %}" width="40" height="40" class="d-inline-block align-top" alt="" loading="lazy">
+            <a class="navbar-brand logo-top" href="{% url 'main:index' %}">
+                <img src="{% static 'img/favicon.png' %}" width="40" height="40" class="d-inline-block align-top" alt="" loading="lazy">
                 Brand Name
             </a>
 <!--            {% if user.is_authenticated %}-->
             <div class="float-right">
-                <a href="{% url 'main:profile' %}" id="profile" class="mx-auto text-primary text-decoration-none" title="Профиль">Профиль</a>
-		        <a href="{% url 'main:logout' %}" id="auth" class="mx-auto text-primary text-decoration-none" title="Выйти">Выход</a>
+                <a href="" id="profile" class="mx-auto text-primary text-decoration-none" title="Профиль">Профиль</a>
+		        <a href="" id="auth" class="mx-auto text-primary text-decoration-none" title="Выйти">Выход</a>
             </div>
 
 <!--		    {% else %}-->
