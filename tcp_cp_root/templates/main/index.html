@@ -4,7 +4,13 @@
 {% block index %}
 
 <div class="content " style="width: 70%">
-    <div class="filter_block bg-light m-1 p-1 " style="width: 100%">
+    <div class="filter_block bg-light p-1 " style="width: 100%; margin-top: 20px; margin-bottom: 20px">
+        <form method="get" class="">
+            <span class="text-danger d-inline-block">Needs js!!!</span>
+            <span class="d-inline-block mx-2">Filter by date</span>
+            <span class="d-inline-block mx-2">Filter by genre</span>
+            <span class="d-inline-block mx-2" style="float: right">Search</span>
+        </form>
 <!--    gg    -->
     </div>
 
@@ -14,7 +20,7 @@
             <a class="movie_img float-left d-inline-block text-decoration-none" href="{% url 'main:detail' pk=ms.pk %}">
                 <img src="{{ ms.session_movie.movie_image.url }}" class=""  alt="..." width="200px">
             </a>
-            <div class="movie_details float-left d-inline-block ">
+            <div class="movie_details float-left d-inline-block align-top mt-1" style="margin-left: 15px">
                 <a href="{% url 'main:detail' pk=ms.pk %}" class="text-decoration-none">
                     {{ ms.session_movie.movie_title }}
                 </a>
@@ -30,6 +36,35 @@
         {% endfor %}
     </div>
 
+
+
+</div>
+
+<div class="center-block px-auto" style="display: block;">
+    <nav aria-label="...">
+        <ul class="pagination">
+            {% if page.has_previous %}
+            <li class="page-item">
+              <span class="page-link">Previous</span>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <span class="page-link">Previous</span>
+            </li>
+            {% endif %}
+            <li class="page-item"><a class="page-link" href="#">1</a></li>
+            <li class="page-item active">
+              <span class="page-link">
+                2
+                <span class="sr-only">(current)</span>
+              </span>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 
 {% endblock %}
