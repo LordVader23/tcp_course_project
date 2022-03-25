@@ -15,7 +15,7 @@
     </div>
 
     <div class="movie_list float-left">
-        {% for ms in mss %}
+        {% for ms in page %}
         <div class="movie_block">
             <a class="movie_img float-left d-inline-block text-decoration-none" href="{% url 'main:detail' pk=ms.pk %}">
                 <img src="{{ ms.session_movie.movie_image.url }}" class=""  alt="..." width="200px">
@@ -45,24 +45,47 @@
         <ul class="pagination">
             {% if page.has_previous %}
             <li class="page-item">
-              <span class="page-link">Previous</span>
+                <a class="page-link" href="?page={{ page.previous_page_number }}">Предыдущая</a>
+<!--                <span class="page-link"><a href="?page={{ page.previous_page_number }}"></a>Предыдущая</span>-->
             </li>
             {% else %}
             <li class="page-item disabled">
-              <span class="page-link">Previous</span>
+              <span class="page-link">Предыдущая</span>
             </li>
             {% endif %}
-            <li class="page-item"><a class="page-link" href="#">1</a></li>
-            <li class="page-item active">
-              <span class="page-link">
-                2
-                <span class="sr-only">(current)</span>
-              </span>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">3</a></li>
+
+            {% for i in page.paginator.page_range %}
+                {% if i == page.number %}
+                    <li class="page-item active">
+                      <span class="page-link">
+                        {{ page.number }}
+<!--                        <span class="sr-only">(current)</span>-->
+                      </span>
+                    </li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+
+
+<!--            <li class="page-item"><a class="page-link" href="#">1</a></li>-->
+<!--            <li class="page-item active">-->
+<!--              <span class="page-link">-->
+<!--                2-->
+<!--                <span class="sr-only">(current)</span>-->
+<!--              </span>-->
+<!--            </li>-->
+<!--            <li class="page-item"><a class="page-link" href="#">3</a></li>-->
+
+            {% if page.has_next %}
             <li class="page-item">
-              <a class="page-link" href="#">Next</a>
+              <a class="page-link" href="?page={{ page.next_page_number }}">Следующая</a>
             </li>
+            {% else %}
+            <li class="page-item disabled">
+              <a class="page-link" href="#">Следующая</a>
+            </li>
+            {% endif %}
         </ul>
     </nav>
 </div>
