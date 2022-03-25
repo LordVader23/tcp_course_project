@@ -23,5 +23,10 @@ def index(request):
 
 
 def detail(request, pk):
-    ms = get_object_or_404(MovieSession, pk=pk)
+    ms = get_object_or_404(MovieSession, pk=pk)  # change to raw sql later!!!
+    form = ''
+    # need form for booking
 
+    context = {'ms': ms, 'form': form}
+
+    return render(request, 'main/detail.html', context)
