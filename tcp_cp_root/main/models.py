@@ -40,6 +40,7 @@ class Genre(models.Model):
 class MovieSession(models.Model):
     session_movie = models.ForeignKey(Movie, on_delete=models.PROTECT, verbose_name='Сеанс фильма')
     session_date = models.DateTimeField(verbose_name='Дата и время')
+    session_price = models.FloatField(default=1, verbose_name='Цена')
     # session_seats = models.ForeignKey("Seats", on_delete=models.PROTECT, verbose_name='Места')
     # session_bookings = models.ManyToManyField("Booking", verbose_name='Бронирования')
 
