@@ -65,9 +65,9 @@ class BookingAdm(admin.ModelAdmin):
 
 
 class MovieSessionAdm(admin.ModelAdmin):
-    list_display = ('session_movie', 'session_date')
+    list_display = ('session_movie', 'session_date', 'session_price')
     list_display_links = ('session_movie',)
-    fields = ('session_movie', 'session_date')
+    fields = ('session_movie', 'session_date', 'session_price')
     list_filter = ('session_movie', 'session_date')
     list_per_page = 10
     list_max_show_all = 100
