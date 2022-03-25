@@ -1,0 +1,53 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block index %}
+
+<div class="content " style="width: 70%; min-height: 600px">
+    <div class="movie_block float-left">
+        <h1 style="margin-top: 15px; margin-bottom: 15px">{{ ms.session_movie.movie_title }}</h1>
+        <div class="movie_image float-left d-inline-block">
+            <img src="{{ ms.session_movie.movie_image.url }}" class=""  alt="..." width="200px">
+        </div>
+
+        <div class="movie_details float-left d-inline-block align-top mt-1" style="margin-left: 15px">
+            <p class="genre">
+                Жанры: {{ ms.session_movie.get_genres_str }}
+            </p>
+            <p class="date">
+                Год выхода: {{ ms.session_movie.movie_year }} год
+            </p>
+            <p class="countries">
+                Страна: {{ ms.session_movie.movie_country }}
+            </p>
+            <p class="duration">
+                Продолжительность: {{ ms.session_movie.movie_duration }} мин.
+            </p>
+        </div>
+    </div>
+
+    <div class="movie_tabs" style="margin-top: 25px">
+        <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-description-tab" data-bs-toggle="tab" data-bs-target="#nav-description" type="button" role="tab" aria-controls="nav-description" aria-selected="true">О фильме</button>
+            <button class="nav-link" id="nav-booking-tab" data-bs-toggle="tab" data-bs-target="#nav-booking" type="button" role="tab" aria-controls="nav-booking" aria-selected="false">Бронирование</button>
+            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</button>
+        </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-description" role="tabpanel" aria-labelledby="nav-description-tab">
+                {{ ms.session_movie.movie_description }}
+            </div>
+            <div class="tab-pane fade" id="nav-booking" role="tabpanel" aria-labelledby="nav-booking-tab">
+                <p>Image with seats</p>
+                <p>Form for booking</p>
+
+            </div>
+            <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}
