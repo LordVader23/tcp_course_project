@@ -4,14 +4,20 @@
 {% block index %}
 
 <div class="content " style="width: 70%">
-    <div class="filter_block bg-light p-1 " style="width: 100%; margin-top: 20px; margin-bottom: 20px">
-        <form method="get" class="">
-            <span class="text-danger d-inline-block">Needs js!!!</span>
-            <span class="d-inline-block mx-2">Filter by date</span>
-            <span class="d-inline-block mx-2">Filter by genre</span>
-            <span class="d-inline-block mx-2" style="float: right">Search</span>
-        </form>
-<!--    gg    -->
+    <div class="filter_block bg-light p-2 " style="width: 120%; margin-top: 20px; margin-bottom: 20px">
+        <form method="get" id="filter_form">
+			{% for hidden in form.hidden_fields %}
+				{{ hidden }}
+			{% endfor %}
+			{% for field in form.visible_fields %}
+				<div class="filter_elem d-inline-block mx-2">
+<!--					{{ field.label_tag }}-->
+					{{ field }}
+					<!--<span class="helptext">{{ field.help_text }}</span>-->
+				</div>
+			{% endfor %}
+			<input class="d-inline-block mx-2 text-primary" type="submit" value="Применить" />
+            </form>
     </div>
 
     <div class="movie_list float-left">
