@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block index %}
+
+<div class="content " style="min-height: 600px">
+
+    <div id="simle_login">
+		<h2>Вход</h2>
+		<form method="post">
+			{% csrf_token %}
+			{% for hidden in form.hidden_fields %}
+				{{ hidden }}
+			{% endfor %}
+			{% for field in form.visible_fields %}
+				{{ field.label_tag }}
+				{{ field }}
+				{{ field.help_text }}
+			{% endfor %}
+            <p style="margin-top: 20px">
+			<input type="submit" value="Войти">
+			</p>
+		</form>
+		<p><a href="{% url 'main:password_reset' %}">Забыли пароль?</a>
+	</div>
+
+</div>
+
+{% endblock %}
