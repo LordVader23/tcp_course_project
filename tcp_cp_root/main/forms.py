@@ -1,4 +1,7 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth import password_validation
+from django.core.exceptions import ValidationError
 
 from .models import Genre
 
@@ -10,3 +13,57 @@ class FilterForm(forms.Form):
                               widget=forms.TextInput(attrs={'placeholder': 'Поиск'}))
     date = forms.DateField(required=False, label='Дата премьеры', widget=DateInput)
     genre = forms.ModelChoiceField(queryset=Genre.objects.all(), label='Жанр', required=False)
+
+
+class RegisterUserForm(forms.ModelForm):
+    email = forms.EmailField(required=True, label='Адрес ел. почты')
+
+    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput,
+                                help_text=password_validation.password_validators_help_text_html())
+    password2 = forms.CharField(label='Пароль(повторно)', widget=forms.PasswordInput,
+                                help_text='Введите тот же пароль')
+
+    def clean_password1(self):
+        password1 = self.cleaned_data['password1']
+
+        if password1:
+            password_validation.validate_password(password1)
+        return password1
+
+    def clean(self):
+        super().clean()
+        password1 = self.cleaned_data['password1']
+        # password1 = password1.encode('utf-8').strip()
+        password2 = self.cleaned_data['password2']
+        # password2 = password1.encode('utf-8').strip()
+
+        if password1 and password2 and password1 != password2:
+            errors = {'password2': ValidationError('Введенные пароли не совпадают', code='password_mismatch')}
+            raise ValidationError(errors)
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password1'])
+
+        if commit:
+            user.save()
+
+        return user
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name')
+
+
+class LoginUserForm(forms.Form):
+    username = forms.CharField(label='Имя пользователя')
+    password = forms.CharField(widget=forms.PasswordInput, label='Пароль')
+    remember_me = forms.BooleanField(label='Запомнить меня', required=False)
+
+
+class ChangeInfoForm(forms.ModelForm):
+    email = forms.EmailField(required=True, label='Адрес ел. почты')
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name', 'last_name')
