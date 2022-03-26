@@ -20,16 +20,18 @@
                 <img src="{% static 'img/favicon.png' %}" width="40" height="40" class="d-inline-block align-top" alt="" loading="lazy">
                 Киноафиша
             </a>
-<!--            {% if user.is_authenticated %}-->
+            {% if user.is_authenticated %}
             <div class="float-right">
                 <a href="" id="profile" class="mx-auto text-primary text-decoration-none" title="Профиль">Профиль</a>
-		        <a href="" id="auth" class="mx-auto text-primary text-decoration-none" title="Выйти">Выход</a>
+		        <a href="" id="logout" class="mx-auto text-primary text-decoration-none" title="Выйти">Выход</a>
             </div>
 
-<!--		    {% else %}-->
-<!--		    <a href="{% url 'main:register' %}" id="reg" class="float-right" title="Зарегистрироваться">Регистрация</a>-->
-<!--		    <a href="{% url 'main:login' %}" id="auth" class="float-right" title="Войти">Вход</a>-->
-<!--		    {% endif %}-->
+		    {% else %}
+            <div class="float-right">
+                <a href="{% url 'main:register' %}" class="mx-auto text-primary text-decoration-none" id="reg" title="Зарегистрироваться">Регистрация</a>
+                <a href="{% url 'main:login' %}" id="auth" class="mx-auto text-primary text-decoration-none" title="Войти">Вход</a>
+            </div>
+		    {% endif %}
         </nav>
 
         {% block index %}
