@@ -65,6 +65,9 @@ class Booking(models.Model):
     def __str__(self):
         return '{} {}'.format(self.booking_owner, self.booking_date)
 
+    def get_seats(self):
+        return ", ".join([str(s.seats_number) for s in self.booking_seats.all()])
+
     # def save(self, *args, **kwargs):
     #     size = 18
     #     chars = string.ascii_uppercase + string.digits
