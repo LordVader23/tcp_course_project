@@ -137,7 +137,7 @@ def login(request, template_name='registration/login.html',
 # Profile views -----------------------------------------------------------------------
 @login_required
 def profile(request):
-    bookings = Booking.objects.filter(booking_owner=request.user.pk)
+    bookings = Booking.objects.filter(booking_owner=request.user.pk)  # change to raw sql later!!! and date = today or later
     context = {'bookings': bookings}
 
     return render(request, 'main/profile.html', context)
