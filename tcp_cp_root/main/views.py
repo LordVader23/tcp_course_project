@@ -1,20 +1,23 @@
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, PasswordChangeView
+from django.contrib.auth.models import User
+from django.contrib.auth import login as auth_login
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+
 
 from django.core.paginator import Paginator
 
 from django.db.models import Q
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView, UpdateView
-from django.contrib.auth.models import User
-from django.contrib.auth import login as auth_login
+from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
 
-from .models import MovieSession
+from .models import MovieSession, Booking
 from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm
 
 
@@ -131,8 +134,13 @@ def login(request, template_name='registration/login.html',
         return render(request, 'main/login.html', context)
 
 
-class LogoutView(LoginRequiredMixin, LogoutView):
-    template_name = 'main/logout.html'
+# Profile views -----------------------------------------------------------------------
+@login_required
+def profile(request):
+    bookings = Booking.objects.filter(booking_owner=request.user.pk)
+    context = {'bookings': bookings}
+
+    return render(request, 'main/profile.html', context)
 
 
 class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
@@ -150,3 +158,29 @@ class ChangeUserInfoView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
         if not queryset:
             queryset = self.get_queryset()
         return get_object_or_404(queryset, pk=self.user_id)
+
+
+class DeleteUserView(LoginRequiredMixin, DeleteView):
+    model = User
+    template_name = 'main/delete_user.html'
+    success_url = reverse_lazy('main:index')
+
+    def dispatch(self, request, *args, **kwargs):
+        self.user_id = request.user.pk
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        logout(request)
+        messages.add_message(request, messages.SUCCESS, 'Пользователь удален')
+        return super().post(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        if not queryset:
+            queryset = self.get_queryset()
+        return get_object_or_404(queryset, pk=self.user_id)
+
+
+class PasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChangeView):
+    template_name = 'main/password_change.html'
+    success_url = reverse_lazy('main:profile')
+    success_message = 'Пароль пользователя изменен'
