@@ -22,8 +22,8 @@
             </a>
             {% if user.is_authenticated %}
             <div class="float-right">
-                <a href="" id="profile" class="mx-auto text-primary text-decoration-none" title="Профиль">Профиль</a>
-		        <a href="" id="logout" class="mx-auto text-primary text-decoration-none" title="Выйти">Выход</a>
+                <a href="{% url 'main:profile' %}" id="profile" class="mx-auto text-primary text-decoration-none" title="Профиль">Профиль</a>
+		        <a href="{% url 'main:logout' %}?next={% url 'main:index' %}" id="logout" class="mx-auto text-primary text-decoration-none" title="Выйти">Выход</a>
             </div>
 
 		    {% else %}
