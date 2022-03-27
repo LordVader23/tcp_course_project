@@ -1,0 +1,106 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block index %}
+
+<div class="content " style="min-height: 600px">
+    <div id="profile_page">
+        <h1 style="margin-top: 10px; margin-bottom: 10px">Добро пожаловать {{ user.username }}</h1>
+        <div class="profile_tabs" style="margin-top: 25px">
+        <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-bookings-tab" data-bs-toggle="tab" data-bs-target="#nav-bookings" type="button" role="tab" aria-controls="nav-bookings" aria-selected="true">Мои Бронирования</button>
+            <button class="nav-link" id="nav-data-tab" data-bs-toggle="tab" data-bs-target="#nav-data" type="button" role="tab" aria-controls="nav-data" aria-selected="false">Данные пользователя</button>
+            <button class="nav-link" id="nav-settings-tab" data-bs-toggle="tab" data-bs-target="#nav-settings" type="button" role="tab" aria-controls="nav-settings" aria-selected="false">Настройки</button>
+        </div>
+        </nav>
+        <div class="tab-content mt-2" id="nav-tabContent">
+            <div class="tab-pane fade  show active" id="nav-bookings" role="tabpanel" aria-labelledby="nav-bookings-tab">
+                <div id="user_bookings">
+					{% if bookings %}
+						{% for booking in bookings %}
+							<div class="user_booking">
+								<div class="b_in">
+                                    <p><h2>{{ booking.booking_code }}</h2></p>
+                                    <p>Статус: <b>{{ booking.booking_status }}</b></p>
+                                    <p>
+                                        <span class="movie_title d-inline-block">
+                                            <a href="{% url 'main:detail' pk=booking.booking_session.session_movie.pk %}" class="text-decoration-none">
+                                                {{ booking.booking_session.session_movie.movie_title }}
+                                                -
+                                                {{ booking.booking_session.session_movie.movie_date }}
+                                            </a>
+                                        </span>
+                                    </p>
+                                    <p>
+                                        <span class="seats d-inline-block mx-2">
+                                            Места: {{ booking.get_seats }}
+                                        </span>
+                                        <span class="payment d-inline-block mx-2">
+                                            {% if booking.payment %}
+                                                {% if booking.payment.payment_is_done %}
+                                                    Оплачено
+                                                {% else %}
+                                                    Не оплачено
+                                                {% endif %}
+                                            {% else %}
+                                                Не оплачено
+                                            {% endif %}
+                                        </span>
+                                    </p>
+                                    <p>Примечание: {{ booking.booking_description }}</p>
+                                    <p><a href="" class="text-decoration-none">Отменить бронирование</a></p>
+
+
+<!--                                    # booking_owner-->
+<!--                                    # booking_code-->
+<!--                                    # booking_payment-->
+<!--                                    # booking_seats-->
+<!--                                    # booking_session-->
+<!--                                    # booking_status-->
+<!--                                    # booking_description-->
+<!--                                    # booking_date
+                                        get_seats
+-->
+								</div>
+							</div>
+                            <hr>
+						{% endfor %}
+					{% else %}
+						<p class="m-2">У вас нет бронирований!</p>
+					{% endif %}
+				</div>
+            </div>
+            <div class="tab-pane fade" id="nav-data" role="tabpanel" aria-labelledby="nav-data-tab">
+                <div id="user_data">
+                    <p class="ml-2">Логин: {{ user.username }}</p>
+                {% if user.first_name %}
+                    <p class="ml-2">Имя: {{ user.first_name }}</p>
+                {% endif %}
+                {% if user.last_name %}
+                    <p class="ml-2">Фамилия: {{ user.last_name }}</p>
+                {% endif %}
+                </div>
+            </div>
+            <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+                <div id="user_settings">
+                    <div class="setting float-left mt-2">
+                        <a href="{% url 'main:password_change' %}" class="text-decoration-none">Сменить пароль</a>
+                    </div>
+                    <div class="setting float-left mt-2">
+                        <a href="{% url 'main:profile_change' %}" class="text-decoration-none">Изменить данные пользователя</a>
+                    </div>
+                    <div class="setting float-left mt-2">
+                        <a href="{% url 'main:profile_delete' %}" class="text-decoration-none">Удалить аккаунт</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
