@@ -37,10 +37,10 @@ class MovieAdm(admin.ModelAdmin):
 
 
 class BookingAdm(admin.ModelAdmin):
-    list_display = ('booking_owner', 'booking_status',  'booking_code', 'booking_payment',
+    list_display = ('booking_owner', 'booking_session', 'booking_status',  'booking_code', 'booking_payment',
                     'get_seats', 'booking_description', 'booking_date')
     list_display_links = ('booking_owner', )
-    fields = ('booking_owner', 'booking_status',
+    fields = ('booking_owner', 'booking_session', 'booking_status',
               'booking_seats', 'booking_description', 'booking_date')
     readonly_fields = ('get_seats',)
     search_fields = ('booking_date', )

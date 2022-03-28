@@ -54,12 +54,12 @@ class MovieSession(models.Model):
 
 class Booking(models.Model):
     booking_owner = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name='Владелец бронирования')
-    booking_code = models.CharField(max_length=50, verbose_name='Уникальный код бронирования', default=0)
+    booking_code = models.CharField(max_length=50, verbose_name='Уникальный код бронирования', default='')
     booking_payment = models.ForeignKey('Payment', on_delete=models.PROTECT, verbose_name='Оплата', null=True)
     booking_seats = models.ManyToManyField("Seats", verbose_name='Бронируемые места')
     booking_session = models.ForeignKey(MovieSession, on_delete=models.PROTECT, verbose_name='Сеанс', default='0')
     booking_status = models.ForeignKey('Status', on_delete=models.PROTECT, verbose_name='Статус')
-    booking_description = models.CharField(max_length=200, verbose_name='Примечания', null=True)
+    booking_description = models.CharField(max_length=200, verbose_name='Примечания', null=True, blank=True)
     booking_date = models.DateTimeField(verbose_name='Дата и время бронирования')
 
     def __str__(self):
@@ -68,12 +68,12 @@ class Booking(models.Model):
     def get_seats(self):
         return ", ".join([str(s.seats_number) for s in self.booking_seats.all()])
 
-    # def save(self, *args, **kwargs):
-    #     size = 18
-    #     chars = string.ascii_uppercase + string.digits
-    #     self.booking_code = ''.join(random.choice(chars) for _ in range(size))
-    #
-    #     super(Booking, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        size = 18
+        chars = string.ascii_uppercase + string.digits
+        self.booking_code = ''.join(random.choice(chars) for _ in range(size))
+
+        super(Booking, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Бронирование'
