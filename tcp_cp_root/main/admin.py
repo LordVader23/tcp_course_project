@@ -65,12 +65,17 @@ class BookingAdm(admin.ModelAdmin):
 
 
 class MovieSessionAdm(admin.ModelAdmin):
-    list_display = ('session_movie', 'session_date', 'session_price')
+    list_display = ('session_movie', 'session_date', 'session_price', 'get_booked_seats')
     list_display_links = ('session_movie',)
     fields = ('session_movie', 'session_date', 'session_price')
     list_filter = ('session_movie', 'session_date')
     list_per_page = 10
     list_max_show_all = 100
+
+    def get_booked_seats(self, obj):
+        return ", ".join([str(s) for s in obj.get_booked_seats()])
+
+    get_booked_seats.short_description = 'Забронированные места'
 
 
 admin.site.register(Movie, MovieAdm)

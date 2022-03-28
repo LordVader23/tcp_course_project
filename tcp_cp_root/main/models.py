@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.contrib.auth.models import User
 
 import string
@@ -46,6 +47,14 @@ class MovieSession(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.session_movie, self.session_date)
+
+    def get_booked_seats(self):
+        """
+
+        :return: list with free seats
+        """
+        q = Q(booking_status__status_name='Подтвержден')
+        return [seat.seats_number for b_obj in self.booking_set.filter(q) for seat in b_obj.booking_seats.all()]
 
     class Meta:
         verbose_name = 'Сеанс'
