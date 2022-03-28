@@ -51,7 +51,7 @@ class MovieSession(models.Model):
     def get_booked_seats(self):
         """
 
-        :return: list with free seats
+        :return: list with booked seats
         """
         q = Q(booking_status__status_name='Подтвержден')
         return [seat.seats_number for b_obj in self.booking_set.filter(q) for seat in b_obj.booking_seats.all()]
