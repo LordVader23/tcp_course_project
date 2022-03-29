@@ -67,7 +67,13 @@
                                         {% if booking.booking_description %}
                                             <p>Примечание: {{ booking.booking_description }}</p>
                                         {% endif %}
-                                    <p><a href="" class="text-decoration-none">Отменить бронирование</a></p>
+
+                                    {% if booking.booking_status != 'Отменен' %}
+                                    <!--        Button trigger modal                       -->
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                        Отменить бронирование
+                                    </button>
+                                    {% endif %}
 
 
 <!--                                    # booking_owner-->
@@ -81,6 +87,39 @@
                                         get_seats
 -->
 								</div>
+<!--          gggggggggggggggggg                      -->
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Отмена бронирования</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                    <form method="post">
+                                                        {% csrf_token %}
+                                                        <div class="modal-body">
+                                                            <input type='hidden' value='{{booking.pk}}' name='booking_pk'>
+                                                            Вы действительно хотитет удалить бронирование
+                                                            <br>
+                                                            {{ booking.booking_session.session_movie.movie_title }}
+                                                            -
+                                                            {{ booking.booking_session.session_date }}
+                                                            <br>
+                                                            места: {{ booking.get_seats }}
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                                            <input type="submit" class="btn btn-primary" value="Удалить бронирование" name="cancel_booking_submit">
+                                                        </div>
+                                                    </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+<!--             ggggggggggggggg                   -->
 							</div>
                             <hr>
 						{% endfor %}
