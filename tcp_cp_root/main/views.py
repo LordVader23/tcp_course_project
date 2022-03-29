@@ -97,7 +97,12 @@ def detail(request, pk):
              [22, 23, 24, 25, 26, 27], [28, 29, 30, 31, 32, 33]]
     b_seats = ms.get_booked_seats()
 
-    context = {'ms': ms, 'form': form, 'seats': seats, 'b_seats': b_seats}
+    if len(b_seats) == 33:
+        all_booked = True
+    else:
+        all_booked = False
+
+    context = {'ms': ms, 'form': form, 'seats': seats, 'b_seats': b_seats, 'all_booked': all_booked}
 
     return render(request, 'main/detail.html', context)
 

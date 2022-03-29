@@ -88,6 +88,8 @@
                             <input type='submit' class="text-primary float-left" value='Забронировать' style="margin-top: 20px">
                         </p>
                     </form>
+                {% elif all_booked %}
+                    <p>Все места заняты</p>
                 {% else %}
                     <p>Чтобы забронировать билеты вы должны сначала авторизироваться!</p>
                 {% endif %}
