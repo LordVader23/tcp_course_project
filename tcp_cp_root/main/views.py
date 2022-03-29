@@ -7,7 +7,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 
 
@@ -171,6 +171,17 @@ def login(request, template_name='registration/login.html',
 def profile(request):
     bookings = Booking.objects.filter(booking_owner=request.user.pk)  # change to raw sql later!!! and date = today or later
     context = {'bookings': bookings}
+
+    if 'cancel_booking_submit' in request.POST:
+        if request.POST.get('booking_pk'):
+            pk = int(request.POST.get('booking_pk'))
+            b = get_object_or_404(Booking, pk=pk)
+            b.delete()
+
+            bookings = Booking.objects.filter(booking_owner=request.user.pk)  # change to raw sql later!!! and date = today or later
+            context = {'bookings': bookings}
+
+            return render(request, 'main/profile.html', context)
 
     return render(request, 'main/profile.html', context)
 
