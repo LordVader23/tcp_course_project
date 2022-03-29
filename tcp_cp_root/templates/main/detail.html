@@ -64,27 +64,33 @@
                 </div>
                 <p>Цена: {{ ms.session_price }}</p>
                 <p>Дата и время: {{ ms.session_date }}</p>
-                <p>Form for booking</p>
-<!--                <script>-->
-<!--                    $(document).ready(function() {-->
-<!--                        $('.selectpicker').selectpicker();-->
-<!--                    });-->
-<!--                </script>-->
-                <select class="selectpicker" multiple >
-                  <option value="1">One</option>
-                  <option value="2">Two</option>
-                  <option value="3">Three</option>
-                  <option value="4">Four</option>
-                  <option value="5">Five</option>
-                </select>
+                {% if user.is_authenticated %}
+                    <form method='post'>
+                        {% csrf_token %}
+                        <span class="d-inline-block" style="width: 25%">
+                            <p>Выберите места:</p>
+                            <select class="form-select" name="seats" required id="id_seats" multiple >
+                                {% for seat_row in seats %}
+                                    {% for seat in seat_row %}
+                                        {% if seat not in b_seats %}
+                                            <option value="{{ seat }}">{{ seat }}</option>
+                                        {% endif %}}
+                                    {% endfor %}
+                                {% endfor %}
+                            </select>
+                        </span>
+                        <span class="d-inline-block" style="width: 50%; margin-left: 10%">
+                            <p>Примечания: </p>
+                            <textarea name="description" class="form-control rounded-0" id="id_description" rows="3" ></textarea>
+                        </span>
 
-                <select class="selectpicker" multiple title="Choose one of the following...">
-                    <option>Mustard</option>
-                    <option>Ketchup</option>
-                    <option>Relish</option>
-                </select>
-
-
+                        <p>
+                            <input type='submit' class="text-primary float-left" value='Забронировать' style="margin-top: 20px">
+                        </p>
+                    </form>
+                {% else %}
+                    <p>Чтобы забронировать билеты вы должны сначала авторизироваться!</p>
+                {% endif %}
             </div>
             <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">...</div>
         </div>
