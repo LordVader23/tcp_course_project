@@ -67,3 +67,9 @@ class ChangeInfoForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username', 'email', 'first_name', 'last_name')
+
+
+class BookingForm(forms.Form):
+    OPTIONS = ()
+    seats = forms.MultipleChoiceField(choices=OPTIONS)
+    description = forms.CharField(widget=forms.Textarea, required=False, label='Примечание')
