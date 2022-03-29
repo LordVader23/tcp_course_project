@@ -17,8 +17,10 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
 
-from .models import MovieSession, Booking
-from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm
+from .models import MovieSession, Booking, Seats, Status
+from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm, BookingForm
+
+from datetime import datetime
 
 
 def index(request):
@@ -67,12 +69,33 @@ def index(request):
 
 def detail(request, pk):
     ms = get_object_or_404(MovieSession, pk=pk)  # change to raw sql later!!!
-    form = ''
-    # need form for booking
+    form = BookingForm()
+
+    if request.POST and request.is_authenticated():
+        if request.POST.get('seats'):
+            seats_l = [int(i) for i in request.POST.get('seats')]
+            status = Status.objects.filter(Q(status_name='Новый'))[0]
+
+            if request.POST.get('description'):
+                b = Booking(booking_owner=request.user, booking_session=ms, booking_status=status,
+                            booking_description=request.POST.get('description'), booking_date=datetime.now())
+                b.save()
+            else:
+                b = Booking(booking_owner=request.user, booking_session=ms,
+                            booking_status=status, booking_date=datetime.now())
+                b.save()
+
+            # adding seats
+            for seat in seats_l:
+                seat_obj = Seats(seats_number=seat)
+                seat_obj.save()
+                b.booking_seats.add(seat_obj)
+
+            return HttpResponseRedirect(reverse_lazy('main:profile'))
+
     seats = [[1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14], [15, 16, 17, 18, 19, 20, 21],
              [22, 23, 24, 25, 26, 27], [28, 29, 30, 31, 32, 33]]
     b_seats = ms.get_booked_seats()
-    print(b_seats)
 
     context = {'ms': ms, 'form': form, 'seats': seats, 'b_seats': b_seats}
 
