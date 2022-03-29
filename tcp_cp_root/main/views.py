@@ -182,6 +182,10 @@ def profile(request):
             context = {'bookings': bookings}
 
             return render(request, 'main/profile.html', context)
+        elif request.POST.get('delete_user_submit'):
+            request.user.delete()
+
+            return redirect('index')
 
     return render(request, 'main/profile.html', context)
 

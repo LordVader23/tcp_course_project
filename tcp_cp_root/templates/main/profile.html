@@ -131,6 +131,7 @@
             <div class="tab-pane fade" id="nav-data" role="tabpanel" aria-labelledby="nav-data-tab">
                 <div id="user_data">
                     <p class="ml-2">Логин: {{ user.username }}</p>
+                    <p class="ml-2">Email: {{ user.email }}</p>
                 {% if user.first_name %}
                     <p class="ml-2">Имя: {{ user.first_name }}</p>
                 {% endif %}
@@ -142,15 +143,49 @@
             <div class="tab-pane fade" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
                 <div id="user_settings">
                     <div class="setting float-left mt-2">
-                        <a href="{% url 'main:password_change' %}" class="text-decoration-none">Сменить пароль</a>
+                        <!--        Button trigger modal                       -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                            Сменить пароль
+                        </button>
+<!--                        <a href="{% url 'main:password_change' %}" class="text-decoration-none">Сменить пароль</a>-->
                     </div>
                     <div class="setting float-left mt-2">
-                        <a href="{% url 'main:profile_change' %}" class="text-decoration-none">Изменить данные пользователя</a>
+                        <!--        Button trigger modal                       -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#changeInfoModal">
+                            <a href="{% url 'main:profile_change' %}" class="text-decoration-none" style="color: white">Изменить данные пользователя</a>
+                        </button>
+
                     </div>
                     <div class="setting float-left mt-2">
-                        <a href="{% url 'main:profile_delete' %}" class="text-decoration-none">Удалить аккаунт</a>
+                        <!--        Button trigger modal                       -->
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deleteUserModal">
+                            Удалить аккаунт
+                        </button>
                     </div>
                 </div>
+
+                <!-- Modal for deleting user -->
+                <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteUserModalLabel">Удалить аккаунт</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        Вы действительно хотите удалить аккаунт?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                        <input type="submit" class="btn btn-primary" value="Удалить аккаунт" name="delete_user_submit">
+                                    </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+
 
             </div>
         </div>
