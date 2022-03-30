@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block index %}
+
+<div class="content d-flex justify-content-center" style="min-height: 600px; display: block;">
+
+    <div class="payment_block " style="width: 60%; margin-top: 25px;">
+        <div class="p_header bg-success p-2">
+            <h2 style="color: white;">Some pay</h2>
+        </div>
+
+        <div class="p_in">
+            <form method="post">
+                {% csrf_token %}
+                <span>
+                    <p style="margin-top: 20px;">Номер банковской карты</p>
+                    <input required name="card_number" type="text" placeholder="XXXX XXXX XXXX XXXX">
+                </span>
+                <br>
+                <span class="d-inline-block float-left" style="margin-top: 15px">
+                    <input required name="date_exp" type="text" placeholder="XX/XX">
+                </span>
+                <span class="d-inline-block float-left" style="margin-top: 15px; margin-left: 20px">
+                    <input required name="cvc" type="text" placeholder="XXX">
+                </span>
+                <p style="margin-top: 15px;">К оплате: {{ price_sum }}</p>
+                <input type="submit" style="color: green" value="Оплатить" name="payment_submit">
+            </form>
+        </div>
+    </div>
+
+
+</div>
+
+{% endblock %}
