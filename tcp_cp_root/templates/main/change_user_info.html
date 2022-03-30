@@ -1,0 +1,21 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block index %}
+
+<div class="content " style="min-height: 600px">
+
+    <div id="change_user_info_page">
+        <h2>Правка личных данных пользователя {{ user.username }}</h2>
+        <form id="change_user_info_form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {{ form.as_p }}
+
+            <input type='submit' class="text-primary" value="Сохранить">
+        </form>
+    </div>
+
+</div>
+
+{% endblock %}
