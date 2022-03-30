@@ -41,9 +41,9 @@
                                             Цена за билет: {{ booking.booking_session.session_price }}
                                         </span>
                                         <span class="payment d-inline-block mx-2">
-                                            {% if booking.payment %}
-                                                {% if booking.payment.payment_is_done %}
-                                                    Оплачено
+                                            {% if booking.booking_payment %}
+                                                {% if booking.booking_payment.payment_is_done %}
+                                                    <span class="text-success">Оплачено</span>
                                                 {% else %}
                                                     Не оплачено
                                                 {% endif %}
@@ -51,15 +51,15 @@
                                                 Не оплачено
                                             {% endif %}
                                         </span>
-                                        {% if booking.payment %}
-                                            {% if not booking.payment.payment_is_done %}
+                                        {% if booking.booking_payment %}
+                                            {% if not booking.booking_payment.payment_is_done %}
                                                 <span class="payment d-inline-block mx-2">
-                                                    <a href="" class="text-decoration-none">Оплатить</a>
+                                                    <a href="{% url 'main:payment' pk=booking.pk %}" class="text-decoration-none">Оплатить</a>
                                                 </span>
                                             {% endif %}
                                         {% else %}
                                             <span class="payment d-inline-block mx-2">
-                                                <a href="" class="text-decoration-none">Оплатить</a>
+                                                <a href="{% url 'main:payment' pk=booking.pk %}" class="text-decoration-none">Оплатить</a>
                                             </span>
                                         {% endif %}
 
