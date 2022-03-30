@@ -74,25 +74,27 @@ def detail(request, pk):
 
     if request.POST and request.user.is_authenticated:
         if request.POST.get('seats'):
-            seats_l = [int(i) for i in request.POST.get('seats')]
-            status = Status.objects.filter(Q(status_name='Новый'))[0]
+            form = BookingForm(request.POST)
+            if form.is_valid():
+                seats_l = [int(i) for i in form.cleaned_data.get('seats')]
+                status = Status.objects.filter(Q(status_name='Новый'))[0]
 
-            if request.POST.get('description'):
-                b = Booking(booking_owner=request.user, booking_session=ms, booking_status=status,
-                            booking_description=request.POST.get('description'), booking_date=datetime.now())
-                b.save()
-            else:
-                b = Booking(booking_owner=request.user, booking_session=ms,
-                            booking_status=status, booking_date=datetime.now())
-                b.save()
+                if request.POST.get('description'):
+                    b = Booking(booking_owner=request.user, booking_session=ms, booking_status=status,
+                                booking_description=request.POST.get('description'), booking_date=datetime.now())
+                    b.save()
+                else:
+                    b = Booking(booking_owner=request.user, booking_session=ms,
+                                booking_status=status, booking_date=datetime.now())
+                    b.save()
 
-            # adding seats
-            for seat in seats_l:
-                seat_obj = Seats(seats_number=seat)
-                seat_obj.save()
-                b.booking_seats.add(seat_obj)
+                # adding seats
+                for seat in seats_l:
+                    seat_obj = Seats(seats_number=seat)
+                    seat_obj.save()
+                    b.booking_seats.add(seat_obj)
 
-            return HttpResponseRedirect(reverse_lazy('main:profile'))
+                return HttpResponseRedirect(reverse_lazy('main:profile'))
 
     seats = [[1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14], [15, 16, 17, 18, 19, 20, 21],
              [22, 23, 24, 25, 26, 27], [28, 29, 30, 31, 32, 33]]
