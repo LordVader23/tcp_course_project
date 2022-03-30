@@ -18,7 +18,7 @@ from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
 
-from .models import MovieSession, Booking, Seats, Status
+from .models import MovieSession, Booking, Seats, Status, Payment
 from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm, BookingForm
 
 from datetime import datetime
@@ -72,7 +72,7 @@ def detail(request, pk):
     ms = get_object_or_404(MovieSession, pk=pk)  # change to raw sql later!!!
     form = BookingForm()
 
-    if request.POST and request.is_authenticated():
+    if request.POST and request.user.is_authenticated:
         if request.POST.get('seats'):
             seats_l = [int(i) for i in request.POST.get('seats')]
             status = Status.objects.filter(Q(status_name='Новый'))[0]
@@ -248,3 +248,23 @@ class PasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChange
     template_name = 'main/password_change.html'
     success_url = reverse_lazy('main:profile')
     success_message = 'Пароль пользователя изменен'
+
+
+def payment(request, pk):
+    context = {}
+    b = get_object_or_404(Booking, pk=pk)
+    price_sum = b.booking_session.session_price * len(b.booking_seats.all())
+
+    if request.method == 'POST':
+        if 'payment_submit' in request.POST:
+            p = Payment(payment_is_done=True, payment_date=datetime.now(), payment_info=f'Booking pk = {pk}')
+            p.save()
+
+            b.booking_payment = p
+            b.save()
+
+            return redirect('main:profile')
+
+    context['price_sum'] = price_sum
+
+    return render(request, 'main/payment.html', context)
