@@ -1,5 +1,6 @@
-from django.contrib.auth import authenticate, logout
+from django.contrib.auth import authenticate, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LogoutView, PasswordChangeView
 from django.contrib.auth.models import User
@@ -182,10 +183,26 @@ def profile(request):
             context = {'bookings': bookings}
 
             return render(request, 'main/profile.html', context)
-        elif request.POST.get('delete_user_submit'):
-            request.user.delete()
 
+    if 'delete_user_submit' in request.POST:
+        request.user.delete()
+
+        return redirect('index')
+
+    if 'change_password_submit' in request.POST:
+        form = PasswordChangeForm(request.user, request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
             return redirect('index')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    context['form'] = form
 
     return render(request, 'main/profile.html', context)
 

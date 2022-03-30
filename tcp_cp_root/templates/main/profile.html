@@ -164,6 +164,28 @@
                     </div>
                 </div>
 
+                <!-- Modal for changing password -->
+                <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="changePasswordModalLabel">Смена пароля</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <div class="modal-body">
+                                        {{ form.as_p }}
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                        <input type="submit" class="btn btn-primary" value="Сменить пароль" name="change_password_submit">
+                                    </div>
+                                </form>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Modal for deleting user -->
                 <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
