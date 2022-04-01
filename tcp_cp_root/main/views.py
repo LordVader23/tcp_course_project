@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
+from django.db.models.expressions import RawSQL
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
@@ -15,6 +16,7 @@ from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator
 
 from django.db.models import Q
+from django.db import connection
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
 
@@ -25,7 +27,11 @@ from datetime import datetime
 
 
 def index(request):
-    mss = MovieSession.objects.all()  # change to raw sql later!!!
+    # mss = MovieSession.objects.all()  # change to raw sql later!!!
+    map_names1 = {'id': 'id', 'session_movie_id': 'session_movie.pk',
+                  'session_date': 'session_date', 'session_price': 'session_price'}
+    mss = MovieSession.objects.raw("SELECT * FROM `main_moviesession`", translations=map_names1)
+    print(mss)
     initial = {}  # To initialize form
 
     get_copy = request.GET.copy()
@@ -36,7 +42,13 @@ def index(request):
                 if param == 'keyword':
                     keyword = request.GET['keyword']
                     q = Q(session_movie__movie_title__icontains=keyword)
-                    mss = mss.filter(q)  # change to raw sql later!!!
+                    # mss = MovieSession.objects.all()
+                    # mss = mss.filter(q)  # change to raw sql later!!!
+                    sql1 = "SELECT main_moviesession.id, main_moviesession.session_movie_id, main_moviesession.session_date, main_moviesession.session_price FROM main_moviesession INNER JOIN main_movie ON (main_moviesession.session_movie_id = main_movie.id) WHERE main_movie.movie_title LIKE '%uncharted%'"
+                    mss = MovieSession.objects.raw(sql1)
+                    print(sql1)
+                    print(mss)
+                    print(connection.queries)
                     initial['keyword'] = keyword
                 elif param == 'date':  # To find out if price_from bigger(or equal) than price_to
                     date = request.GET['date']
