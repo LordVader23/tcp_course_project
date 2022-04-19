@@ -51,18 +51,21 @@
                                                 Не оплачено
                                             {% endif %}
                                         </span>
-                                        {% if booking.booking_payment %}
-                                            {% if not booking.booking_payment.payment_is_done %}
+                                        {% if booking.booking_status.status_name == "Подтвержден" %}
+
+                                            {% if booking.booking_payment %}
+                                                {% if not booking.booking_payment.payment_is_done %}
+                                                    <span class="payment d-inline-block mx-2">
+                                                        <a href="{% url 'main:payment' pk=booking.pk %}" class="text-decoration-none">Оплатить</a>
+                                                    </span>
+                                                {% endif %}
+                                            {% else %}
                                                 <span class="payment d-inline-block mx-2">
                                                     <a href="{% url 'main:payment' pk=booking.pk %}" class="text-decoration-none">Оплатить</a>
                                                 </span>
                                             {% endif %}
-                                        {% else %}
-                                            <span class="payment d-inline-block mx-2">
-                                                <a href="{% url 'main:payment' pk=booking.pk %}" class="text-decoration-none">Оплатить</a>
-                                            </span>
-                                        {% endif %}
 
+                                        {% endif %}
                                     </p>
                                         {% if booking.booking_description %}
                                             <p>Примечание: {{ booking.booking_description }}</p>
