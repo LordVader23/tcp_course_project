@@ -185,6 +185,15 @@ def login(request, template_name='registration/login.html',
 @login_required
 def profile(request):
     bookings = Booking.objects.filter(booking_owner=request.user.pk)  # change to raw sql later!!! and date = today or later
+
+    for b in bookings:
+        if b.booking_payment is None or not b.booking_payment.payment_is_done:
+            diff = b.booking_session.session_date.replace(tzinfo=None) - datetime.now()
+            diff = int(diff.total_seconds())
+            if diff < 0 or (diff / 60) > 60:
+                b.booking_status = Status.objects.get(status_name='Отменен')
+                b.save()
+
     context = {'bookings': bookings}
 
     if 'cancel_booking_submit' in request.POST:
