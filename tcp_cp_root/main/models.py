@@ -59,6 +59,7 @@ class MovieSession(models.Model):
     class Meta:
         verbose_name = 'Сеанс'
         verbose_name_plural = 'Сеансы'
+        ordering = ['-session_date']
 
 
 class Booking(models.Model):
