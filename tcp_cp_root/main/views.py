@@ -27,11 +27,11 @@ from datetime import datetime
 
 
 def index(request):
-    # mss = MovieSession.objects.all()  # change to raw sql later!!!
+    mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')  # change to raw sql later!!!
     map_names1 = {'id': 'id', 'session_movie_id': 'session_movie.pk',
                   'session_date': 'session_date', 'session_price': 'session_price'}
-    mss = MovieSession.objects.raw("SELECT * FROM `main_moviesession`", translations=map_names1)
-    print(mss)
+    # mss = MovieSession.objects.raw("SELECT * FROM `main_moviesession`", translations=map_names1)
+    # print(mss)
     initial = {}  # To initialize form
 
     get_copy = request.GET.copy()
