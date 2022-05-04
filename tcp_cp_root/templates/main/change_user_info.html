@@ -5,14 +5,26 @@
 
 <div class="content " style="min-height: 600px">
 
-    <div id="change_user_info_page">
+    <div id="change_user_info_page" class="justify-content-center container">
         <h2>Правка личных данных пользователя {{ user.username }}</h2>
         <form id="change_user_info_form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
-            {{ form.as_p }}
+            {% for field in form %}
 
-            <input type='submit' class="text-primary" value="Сохранить">
+                <div class="mb-3">
+                    <p>
+                        {{ field.label_tag }}
+                    </p>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="helptext">{{ field.help_text|safe }}</p>
+                    {% endif %}
+                </div>
+
+            {% endfor %}
+
+            <input type='submit' class="btn btn-primary" value="Сохранить">
         </form>
     </div>
 

@@ -5,21 +5,46 @@
 
 <div class="content " style="min-height: 600px">
 
-    <div id="simle_reg">
+    <div id="simple_reg" class="justify-content-center container">
         <h2>Регистрация</h2>
         <form method="post">
             {% csrf_token %}
-            {% for hidden in form.hidden_fields %}
-                {{ hidden }}
-            {% endfor %}
-            {% for field in form.visible_fields %}
-                <p class="label">{{ field.label_tag }}</p>
-                {{ field }}
-                <span class="helptext">{{ field.help_text }}</span>
-            {% endfor %}
-            <p style="margin-top: 20px">
-            <input type="submit" class="text-primary" value="Зарегистрироваться">
-            </p>
+            <div class="mb-3">
+                <input type="text" class="form-control mb-1" placeholder="Имя пользователя:" name="username" maxlength="150" required="" id="id_username">
+                <span class="helptext">Обязательное поле. Не более 150 символов. Только буквы, цифры и символы @/./+/-/_.</span>
+            </div>
+
+            <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Адрес ел. почты:" name="email" required="" id="id_email">
+            </div>
+
+            <div class="mb-3">
+                <input type="password" class="form-control mb-1" placeholder="Пароль:" name="password1" required="" id="id_password1">
+                <span class="helptext">
+                    <ul>
+                        <li>Пароль не должен быть слишком похож на другую вашу личную информацию.</li>
+                        <li>Ваш пароль должен содержать как минимум 8 символов.</li>
+                        <li>Пароль не должен быть слишком простым и распространенным.</li>
+                        <li>Пароль не может состоять только из цифр.</li>
+                    </ul>
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <input type="password" class="form-control" placeholder="Пароль(повторно):" name="password2" required="" id="id_password2">
+            </div>
+
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Имя:" name="first_name" maxlength="150" id="id_first_name">
+            </div>
+
+            <div class="mb-5">
+                <input type="text" class="form-control" placeholder="Фамилия:" name="last_name" maxlength="150" id="id_last_name">
+            </div>
+
+            <div class="">
+                <input type="submit" class="btn btn-primary" value="Зарегистрироваться">
+            </div>
         </form>
     </div>
 
