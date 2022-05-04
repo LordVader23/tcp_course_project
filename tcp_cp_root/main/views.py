@@ -74,8 +74,10 @@ def index(request):
 
     paginator = Paginator(mss, 7)
     page = paginator.get_page(page_num)
+    num_pages = paginator.num_pages
 
-    context = {'mss': mss, 'page': page, 'form': form}
+    context = {'mss': mss, 'page': page, 'form': form,
+               'num_pages': num_pages, 'num_pages_range': range(1, num_pages + 1)}
 
     return render(request, 'main/index.html', context)
 

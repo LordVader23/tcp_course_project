@@ -42,8 +42,6 @@ class MovieSession(models.Model):
     session_movie = models.ForeignKey(Movie, on_delete=models.PROTECT, verbose_name='Сеанс фильма')
     session_date = models.DateTimeField(verbose_name='Дата и время')
     session_price = models.FloatField(default=1, verbose_name='Цена')
-    # session_seats = models.ForeignKey("Seats", on_delete=models.PROTECT, verbose_name='Места')
-    # session_bookings = models.ManyToManyField("Booking", verbose_name='Бронирования')
 
     def __str__(self):
         return '{} {}'.format(self.session_movie, self.session_date)
@@ -77,6 +75,9 @@ class Booking(models.Model):
 
     def get_seats(self):
         return ", ".join([str(s.seats_number) for s in self.booking_seats.all()])
+
+    def get_amount_seats(self):
+        return len(self.booking_seats.all())
 
     def save(self, *args, **kwargs):
         size = 18
