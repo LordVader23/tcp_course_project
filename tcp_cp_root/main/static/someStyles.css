@@ -1,0 +1,28 @@
+div#simple_reg, div#simple_login, #change_user_info_page {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+div#simple_reg h2, div#simple_login h2 {
+    margin-bottom: 20px;
+}
+
+#profile:hover {
+    border-bottom: 2px solid blue;
+}
+
+#logout:hover {
+    border-bottom: 2px solid blue;
+}
+
+#auth:hover {
+    border-bottom: 2px solid blue;
+}
+
+#reg:hover {
+    border-bottom: 2px solid blue;
+}
+

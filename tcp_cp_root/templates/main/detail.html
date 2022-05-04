@@ -1,5 +1,6 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% load my_tags %}
 
 {% block index %}
 
@@ -21,7 +22,13 @@
                 Страна: {{ ms.session_movie.movie_country }}
             </p>
             <p class="duration">
-                Продолжительность: {{ ms.session_movie.movie_duration }} мин.
+                {% if ms.session_movie.movie_duration == 60 %}
+                    Продолжительность: 1 ч.
+                {% elif  ms.session_movie.movie_duration < 60 %}
+                    Продолжительность: {{ ms.session_movie.movie_duration }} мин.
+                {% else %}
+                    Продолжительность: {{ ms.session_movie.movie_duration|div_nr:60 }} ч. {{ ms.session_movie.movie_duration|modulo:60 }} мин.
+                {% endif %}
             </p>
         </div>
     </div>

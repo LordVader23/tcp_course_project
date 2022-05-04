@@ -1,5 +1,6 @@
 {% extends 'main/base.html' %}
 {% load static %}
+{% load my_tags %}
 
 {% block index %}
 
@@ -38,7 +39,7 @@
                                             Места: {{ booking.get_seats }}
                                         </span>
                                         <span class="payment d-inline-block mx-2">
-                                            Цена за билет: {{ booking.booking_session.session_price }}
+                                            Сумма: {{ booking.booking_session.session_price|multi:booking.get_amount_seats }}
                                         </span>
                                         <span class="payment d-inline-block mx-2">
                                             {% if booking.booking_payment %}
