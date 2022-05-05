@@ -192,7 +192,7 @@ def profile(request):
         if b.booking_payment is None or not b.booking_payment.payment_is_done:
             diff = b.booking_session.session_date.replace(tzinfo=None) - datetime.now()
             diff = int(diff.total_seconds())
-            if diff < 0 or (diff / 60) > 60:
+            if diff < 0 or (diff / 60) < 60:
                 b.booking_status = Status.objects.get(status_name='Отменен')
                 b.save()
 
