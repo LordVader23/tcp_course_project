@@ -25,13 +25,11 @@ the session.
 * Add movie sessions
 
 ## Technologies Used:
-___
 * Python 3.10
 * Django 4.0.1
 * Bootstrap 5
 
 ## Usage:
-___
 1. Clone this repository
 2. python manage.py makemigrations
 3. python manage.py migrate
@@ -41,7 +39,6 @@ ___
 Then go to http://127.0.0.1:8000 in your browser
 
 ## Screenshots:
-___
 ### Home
 ![Home page top](screenshots/home1.png)
 
