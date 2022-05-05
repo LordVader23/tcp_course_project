@@ -24,7 +24,7 @@ the session.
 * Change status of bookings
 * Add movie sessions
 
-##Technologies Used:
+## Technologies Used:
 ___
 * Python 3.10
 * Django 4.0.1
