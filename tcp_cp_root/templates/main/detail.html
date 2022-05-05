@@ -68,7 +68,7 @@
                          </div>
                     {% endfor %}
                 </div>
-                <p>Цена: {{ ms.session_price }}</p>
+                <p>Цена: {{ ms.session_price }} грн</p>
                 <p>Дата и время: {{ ms.session_date }}</p>
                 {% if user.is_authenticated %}
                     <form method='post'>
@@ -91,7 +91,7 @@
                         </span>
 
                         <p>
-                            <input type='submit' class="text-primary float-left" value='Забронировать' style="margin-top: 20px">
+                            <input type='submit' class="btn btn-primary float-left" value='Забронировать' style="margin-top: 20px">
                         </p>
                     </form>
                 {% elif all_booked %}

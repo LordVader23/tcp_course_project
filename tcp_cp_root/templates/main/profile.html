@@ -72,11 +72,11 @@
                                             <p>Примечание: {{ booking.booking_description }}</p>
                                         {% endif %}
 
-                                    {% if booking.booking_status != 'Отменен' %}
-                                    <!--        Button trigger modal                       -->
-                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                        Отменить бронирование
-                                    </button>
+                                    {% if booking.booking_status.status_name != 'Отменен' %}
+                                        <!--        Button trigger modal                       -->
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                            Отменить бронирование
+                                        </button>
                                     {% endif %}
 
 
