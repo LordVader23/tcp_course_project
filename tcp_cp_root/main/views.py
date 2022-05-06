@@ -24,16 +24,18 @@ from .models import MovieSession, Booking, Seats, Status, Payment
 from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm, BookingForm
 
 from datetime import datetime
+import datetime as just_datetime
 
 
-#SQLs
+# SQLs
 SQL1 = f"SELECT * FROM `main_moviesession` WHERE session_date > '{str(datetime.now())}' ORDER BY `main_moviesession`.`session_date` DESC;"
 SQL2 = "SELECT main_moviesession.id, main_moviesession.session_movie_id, main_moviesession.session_date, main_moviesession.session_price FROM main_moviesession INNER JOIN main_movie ON (main_moviesession.session_movie_id = main_movie.id) WHERE main_movie.movie_title LIKE '%%{}%%'"
+SQL3 = "SELECT * FROM `main_moviesession` WHERE (NOT (`main_moviesession`.`session_date` <= '{now}') AND `main_moviesession`.`session_date` BETWEEN '{min}' AND '{max}') ORDER BY `main_moviesession`.`session_date` DESC"
 
 
 def index(request):
-    # mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')  # change to raw sql later!!!
-    mss = MovieSession.objects.raw(SQL1)
+    mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')  # change to raw sql later!!!
+    # mss = MovieSession.objects.raw(SQL1)
     initial = {}  # To initialize form
 
     get_copy = request.GET.copy()
@@ -43,14 +45,25 @@ def index(request):
             if request.GET[param]:
                 if param == 'keyword':
                     keyword = request.GET['keyword']
-                    mss = MovieSession.objects.raw(SQL2)
+                    mss = MovieSession.objects.raw(SQL2.format(keyword))
                     initial['keyword'] = keyword
                 elif param == 'date':  # To find out if price_from bigger(or equal) than price_to
                     date = request.GET['date']
                     date_list = date.split('-')
-                    mss = mss.filter(session_date__year=date_list[0],
-                                     session_date__month=date_list[1],
-                                     session_date__day=date_list[2])  # change to raw sql later!!!
+                    date_list = [int(i) for i in date_list]
+                    print(date_list)
+                    # mss = mss.filter(session_date__year=date_list[0],
+                    #                  session_date__month=date_list[1],
+                    #                  session_date__day=date_list[2])  # change to raw sql later!!!
+                    dt_max = str(just_datetime.datetime(date_list[0], date_list[1], date_list[2], 23, 59, 59))
+                    dt_min = str(just_datetime.datetime(date_list[0], date_list[1], date_list[2], 0, 0, 0))
+                    # mss = mss.filter(session_date__range=(dt_min, dt_max))
+                    mss = MovieSession.objects.raw(SQL3.format(now=str(datetime.now()), min=dt_min, max=dt_max))
+
+                    print(mss)
+                    print('ggggggggggggggggggggggggggggggggggggggg')
+                    print(connection.queries)
+                    print('ggggggggggggggggggggggggggggggggggggggg')
                     initial['date'] = date
                 elif param == 'genre':
                     genre = request.GET['genre']
