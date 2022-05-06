@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login as auth_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
-from django.db.models.expressions import RawSQL
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
@@ -27,13 +26,8 @@ from datetime import datetime
 
 
 def index(request):
-    mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')  # change to raw sql later!!!
-    map_names1 = {'id': 'id', 'session_movie_id': 'session_movie.pk',
-                  'session_date': 'session_date', 'session_price': 'session_price'}
-    # mss = MovieSession.objects.raw("SELECT * FROM `main_moviesession`", translations=map_names1)
-    # print(mss)
+    mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')
     initial = {}  # To initialize form
-
     get_copy = request.GET.copy()
 
     for param in get_copy:  # To filter articles
@@ -42,24 +36,18 @@ def index(request):
                 if param == 'keyword':
                     keyword = request.GET['keyword']
                     q = Q(session_movie__movie_title__icontains=keyword)
-                    # mss = MovieSession.objects.all()
-                    # mss = mss.filter(q)  # change to raw sql later!!!
-                    sql1 = "SELECT main_moviesession.id, main_moviesession.session_movie_id, main_moviesession.session_date, main_moviesession.session_price FROM main_moviesession INNER JOIN main_movie ON (main_moviesession.session_movie_id = main_movie.id) WHERE main_movie.movie_title LIKE '%uncharted%'"
-                    mss = MovieSession.objects.raw(sql1)
-                    print(sql1)
-                    print(mss)
-                    print(connection.queries)
+                    mss = mss.filter(q)
                     initial['keyword'] = keyword
                 elif param == 'date':  # To find out if price_from bigger(or equal) than price_to
                     date = request.GET['date']
                     date_list = date.split('-')
                     mss = mss.filter(session_date__year=date_list[0],
                                      session_date__month=date_list[1],
-                                     session_date__day=date_list[2])  # change to raw sql later!!!
+                                     session_date__day=date_list[2])
                     initial['date'] = date
                 elif param == 'genre':
                     genre = request.GET['genre']
-                    mss = mss.filter(session_movie__movie_genres=genre)  # change to raw sql later!!!
+                    mss = mss.filter(session_movie__movie_genres=genre)
                     initial['genre'] = genre
 
     if len(initial) > 0:
@@ -83,7 +71,7 @@ def index(request):
 
 
 def detail(request, pk):
-    ms = get_object_or_404(MovieSession, pk=pk)  # change to raw sql later!!!
+    ms = get_object_or_404(MovieSession, pk=pk)
     form = BookingForm()
 
     if request.POST and request.user.is_authenticated:
@@ -154,14 +142,7 @@ def login(request, template_name='registration/login.html',
                 if not remember_me:
                     context = {'form': form}
                     response = render(request, 'main/login.html', context)
-
-                    # keys = [key for key in request.session.keys()]
-                    # request.session[keys[0]].set_expiry(0)
-                    # ['_auth_user_id', '_auth_user_backend', '_auth_user_hash']
-                    # request.session['_auth_user_id'].set_expiry(0)
                     request.session.set_expiry(0)
-
-                    # settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
                     return HttpResponseRedirect(reverse_lazy('main:index'))
                 else:
@@ -186,7 +167,7 @@ def login(request, template_name='registration/login.html',
 # Profile views -----------------------------------------------------------------------
 @login_required
 def profile(request):
-    bookings = Booking.objects.filter(booking_owner=request.user.pk)  # change to raw sql later!!! and date = today or later
+    bookings = Booking.objects.filter(booking_owner=request.user.pk)
 
     for b in bookings:
         if b.booking_payment is None or not b.booking_payment.payment_is_done:
@@ -204,7 +185,7 @@ def profile(request):
             b = get_object_or_404(Booking, pk=pk)
             b.delete()
 
-            bookings = Booking.objects.filter(booking_owner=request.user.pk)  # change to raw sql later!!! and date = today or later
+            bookings = Booking.objects.filter(booking_owner=request.user.pk)
             context = {'bookings': bookings}
 
             return render(request, 'main/profile.html', context)

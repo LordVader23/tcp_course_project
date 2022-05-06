@@ -15,14 +15,6 @@ class MovieAdm(admin.ModelAdmin):
     list_per_page = 10
     list_max_show_all = 100
 
-    #     movie_title
-    #     movie_image
-    #     movie_country
-    #     movie_year
-    #     movie_duration
-    #     movie_description
-    #     movie_genres
-
     def get_genres(self, obj):
         return "\n".join([g.genre_name for g in obj.movie_genres.all()])
 
@@ -53,15 +45,6 @@ class BookingAdm(admin.ModelAdmin):
         return ", ".join([str(s.seats_number) for s in obj.booking_seats.all()])
 
     get_seats.short_description = 'Места'
-
-    # booking_owner
-    # booking_code
-    # booking_payment
-    # booking_seats
-    # booking_session
-    # booking_status
-    # booking_description
-    # booking_date
 
 
 class MovieSessionAdm(admin.ModelAdmin):
