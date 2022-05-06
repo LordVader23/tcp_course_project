@@ -26,12 +26,14 @@ from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm, 
 from datetime import datetime
 
 
+#SQLs
+SQL1 = f"SELECT * FROM `main_moviesession` WHERE session_date > '{str(datetime.now())}' ORDER BY `main_moviesession`.`session_date` DESC;"
+SQL2 = "SELECT main_moviesession.id, main_moviesession.session_movie_id, main_moviesession.session_date, main_moviesession.session_price FROM main_moviesession INNER JOIN main_movie ON (main_moviesession.session_movie_id = main_movie.id) WHERE main_movie.movie_title LIKE '%%{}%%'"
+
+
 def index(request):
-    mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')  # change to raw sql later!!!
-    map_names1 = {'id': 'id', 'session_movie_id': 'session_movie.pk',
-                  'session_date': 'session_date', 'session_price': 'session_price'}
-    # mss = MovieSession.objects.raw("SELECT * FROM `main_moviesession`", translations=map_names1)
-    # print(mss)
+    # mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')  # change to raw sql later!!!
+    mss = MovieSession.objects.raw(SQL1)
     initial = {}  # To initialize form
 
     get_copy = request.GET.copy()
@@ -41,14 +43,7 @@ def index(request):
             if request.GET[param]:
                 if param == 'keyword':
                     keyword = request.GET['keyword']
-                    q = Q(session_movie__movie_title__icontains=keyword)
-                    # mss = MovieSession.objects.all()
-                    # mss = mss.filter(q)  # change to raw sql later!!!
-                    sql1 = "SELECT main_moviesession.id, main_moviesession.session_movie_id, main_moviesession.session_date, main_moviesession.session_price FROM main_moviesession INNER JOIN main_movie ON (main_moviesession.session_movie_id = main_movie.id) WHERE main_movie.movie_title LIKE '%uncharted%'"
-                    mss = MovieSession.objects.raw(sql1)
-                    print(sql1)
-                    print(mss)
-                    print(connection.queries)
+                    mss = MovieSession.objects.raw(SQL2)
                     initial['keyword'] = keyword
                 elif param == 'date':  # To find out if price_from bigger(or equal) than price_to
                     date = request.GET['date']
