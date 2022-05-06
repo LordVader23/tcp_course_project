@@ -24,6 +24,7 @@ from .models import MovieSession, Booking, Seats, Status, Payment
 from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm, BookingForm
 
 from datetime import datetime
+import datetime as just_datetime
 
 
 def index(request):
@@ -42,9 +43,10 @@ def index(request):
                 elif param == 'date':  # To find out if price_from bigger(or equal) than price_to
                     date = request.GET['date']
                     date_list = date.split('-')
-                    mss = mss.filter(session_date__year=date_list[0],
-                                     session_date__month=date_list[1],
-                                     session_date__day=date_list[2])
+                    date_list = [int(i) for i in date_list]
+                    dt_max = str(just_datetime.datetime(date_list[0], date_list[1], date_list[2], 23, 59, 59))
+                    dt_min = str(just_datetime.datetime(date_list[0], date_list[1], date_list[2], 0, 0, 0))
+                    mss = mss.filter(session_date__range=(dt_min, dt_max))
                     initial['date'] = date
                 elif param == 'genre':
                     genre = request.GET['genre']
