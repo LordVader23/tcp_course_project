@@ -8,7 +8,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django.db.models.expressions import RawSQL
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
 
@@ -20,22 +20,38 @@ from django.db import connection
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
 
-from .models import MovieSession, Booking, Seats, Status, Payment
+from .models import MovieSession, Booking, Seats, Status, Payment, Genre
 from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm, BookingForm
 
 from datetime import datetime
 import datetime as just_datetime
 
+import random
+import string
+
 
 # SQLs
+# Index SQLs
 SQL1 = f"SELECT * FROM `main_moviesession` WHERE session_date > '{str(datetime.now())}' ORDER BY `main_moviesession`.`session_date` DESC;"
 SQL2 = "SELECT main_moviesession.id, main_moviesession.session_movie_id, main_moviesession.session_date, main_moviesession.session_price FROM main_moviesession INNER JOIN main_movie ON (main_moviesession.session_movie_id = main_movie.id) WHERE main_movie.movie_title LIKE '%%{}%%'"
 SQL3 = "SELECT * FROM `main_moviesession` WHERE (NOT (`main_moviesession`.`session_date` <= '{now}') AND `main_moviesession`.`session_date` BETWEEN '{min}' AND '{max}') ORDER BY `main_moviesession`.`session_date` DESC"
+SQL4 = "SELECT * FROM `main_moviesession` INNER JOIN `main_movie` ON (`main_moviesession`.`session_movie_id` = `main_movie`.`id`) INNER JOIN `main_movie_movie_genres` ON (`main_movie`.`id` = `main_movie_movie_genres`.`movie_id`) WHERE (NOT (`main_moviesession`.`session_date` <= '{now}') AND `main_movie_movie_genres`.`genre_id` = {genre_id}) ORDER BY `main_moviesession`.`session_date` DESC"
+# Detail SQLs
+SQL5 = "SELECT * FROM `main_moviesession` WHERE `main_moviesession`.`id` = {pk}"
+SQL6 = "SELECT `main_status`.`id`, `main_status`.`status_name` FROM `main_status` WHERE `main_status`.`status_name` = '{status_name}'"
+SQL7 = "INSERT INTO `main_booking` (`booking_owner_id`, `booking_code`, `booking_payment_id`, `booking_session_id`, `booking_status_id`, `booking_description`, `booking_date`) VALUES ({user_id}, '{code}', NULL, {session_id}, 2, {description}, '{now}')"
+SQL8 = "INSERT INTO `main_seats` (`seats_number`) VALUES ({seat_num})"
+# Profile SQLs
+SQL9 = "SELECT * FROM `main_booking` WHERE `main_booking`.`booking_owner_id` = {user_id} ORDER BY `main_booking`.`booking_date` DESC"
+SQL10 = "SELECT `main_status`.`id`, `main_status`.`status_name` FROM `main_status` WHERE `main_status`.`status_name` = '{status_name}'"
+SQL11 = "DELETE FROM `main_booking` WHERE `main_booking`.`id` = {pk}"
+# Payment SQLs
+SQL12 = "SELECT * FROM `main_booking` WHERE `main_booking`.`booking_owner_id` = {user_id}, `main_booking`.`id` = {pk} ORDER BY `main_booking`.`booking_date` DESC"
+SQL13 = "INSERT INTO `main_payment` (`payment_is_done`, `payment_date`, `payment_info`) VALUES (1, '{now}', 'Booking pk = {pk}')"
 
 
 def index(request):
-    mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')  # change to raw sql later!!!
-    # mss = MovieSession.objects.raw(SQL1)
+    mss = MovieSession.objects.raw(SQL1)
     initial = {}  # To initialize form
 
     get_copy = request.GET.copy()
@@ -51,23 +67,14 @@ def index(request):
                     date = request.GET['date']
                     date_list = date.split('-')
                     date_list = [int(i) for i in date_list]
-                    print(date_list)
-                    # mss = mss.filter(session_date__year=date_list[0],
-                    #                  session_date__month=date_list[1],
-                    #                  session_date__day=date_list[2])  # change to raw sql later!!!
                     dt_max = str(just_datetime.datetime(date_list[0], date_list[1], date_list[2], 23, 59, 59))
                     dt_min = str(just_datetime.datetime(date_list[0], date_list[1], date_list[2], 0, 0, 0))
-                    # mss = mss.filter(session_date__range=(dt_min, dt_max))
-                    mss = MovieSession.objects.raw(SQL3.format(now=str(datetime.now()), min=dt_min, max=dt_max))
 
-                    print(mss)
-                    print('ggggggggggggggggggggggggggggggggggggggg')
-                    print(connection.queries)
-                    print('ggggggggggggggggggggggggggggggggggggggg')
+                    mss = MovieSession.objects.raw(SQL3.format(now=str(datetime.now()), min=dt_min, max=dt_max))
                     initial['date'] = date
                 elif param == 'genre':
                     genre = request.GET['genre']
-                    mss = mss.filter(session_movie__movie_genres=genre)  # change to raw sql later!!!
+                    mss = MovieSession.objects.raw(SQL4.format(now=str(datetime.now()), genre_id=int(genre)))
                     initial['genre'] = genre
 
     if len(initial) > 0:
@@ -91,7 +98,11 @@ def index(request):
 
 
 def detail(request, pk):
-    ms = get_object_or_404(MovieSession, pk=pk)  # change to raw sql later!!!
+    ms = MovieSession.objects.raw(SQL5.format(pk=pk))
+    if not ms:
+        raise Http404
+
+    ms = get_object_or_404(MovieSession, pk=pk)
     form = BookingForm()
 
     if request.POST and request.user.is_authenticated:
@@ -99,19 +110,34 @@ def detail(request, pk):
             form = BookingForm(request.POST)
             if form.is_valid():
                 seats_l = [int(i) for i in form.cleaned_data.get('seats')]
-                status = Status.objects.filter(Q(status_name='Новый'))[0]
+                status = Status.objects.raw(SQL6.format(status_name='Новый'))
 
+                status = Status.objects.filter(Q(status_name='Новый'))[0]
                 if request.POST.get('description'):
+                    size = 18
+                    chars = string.ascii_uppercase + string.digits
+                    code = ''.join(random.choice(chars) for _ in range(size))
+
+                    b = Booking.objects.raw(SQL7.format(user_id=request.user.pk, code=code, session_id=pk,
+                                                        description=request.POST.get('description'),
+                                                        now=str(datetime.now())))
                     b = Booking(booking_owner=request.user, booking_session=ms, booking_status=status,
                                 booking_description=request.POST.get('description'), booking_date=datetime.now())
                     b.save()
                 else:
+                    size = 18
+                    chars = string.ascii_uppercase + string.digits
+                    code = ''.join(random.choice(chars) for _ in range(size))
+
+                    b = Booking.objects.raw(SQL7.format(user_id=request.user.pk, code=code, session_id=pk,
+                                                        description='NULL', now=str(datetime.now())))
                     b = Booking(booking_owner=request.user, booking_session=ms,
                                 booking_status=status, booking_date=datetime.now())
                     b.save()
 
                 # adding seats
                 for seat in seats_l:
+                    seat_obj = Seats.objects.raw(SQL8.format(seat_num=seat))
                     seat_obj = Seats(seats_number=seat)
                     seat_obj.save()
                     b.booking_seats.add(seat_obj)
@@ -162,14 +188,7 @@ def login(request, template_name='registration/login.html',
                 if not remember_me:
                     context = {'form': form}
                     response = render(request, 'main/login.html', context)
-
-                    # keys = [key for key in request.session.keys()]
-                    # request.session[keys[0]].set_expiry(0)
-                    # ['_auth_user_id', '_auth_user_backend', '_auth_user_hash']
-                    # request.session['_auth_user_id'].set_expiry(0)
                     request.session.set_expiry(0)
-
-                    # settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
                     return HttpResponseRedirect(reverse_lazy('main:index'))
                 else:
@@ -194,13 +213,14 @@ def login(request, template_name='registration/login.html',
 # Profile views -----------------------------------------------------------------------
 @login_required
 def profile(request):
-    bookings = Booking.objects.filter(booking_owner=request.user.pk)  # change to raw sql later!!! and date = today or later
+    bookings = Booking.objects.raw(SQL9.format(user_id=request.user.pk))
 
     for b in bookings:
         if b.booking_payment is None or not b.booking_payment.payment_is_done:
             diff = b.booking_session.session_date.replace(tzinfo=None) - datetime.now()
             diff = int(diff.total_seconds())
             if diff < 0 or (diff / 60) < 60:
+                status = Status.objects.raw(SQL10.format(status_name='Отменен'))
                 b.booking_status = Status.objects.get(status_name='Отменен')
                 b.save()
 
@@ -209,10 +229,12 @@ def profile(request):
     if 'cancel_booking_submit' in request.POST:
         if request.POST.get('booking_pk'):
             pk = int(request.POST.get('booking_pk'))
+            b = Booking.objects.raw(SQL11.format(pk=pk))
             b = get_object_or_404(Booking, pk=pk)
             b.delete()
 
-            bookings = Booking.objects.filter(booking_owner=request.user.pk)  # change to raw sql later!!! and date = today or later
+            bookings = Booking.objects.raw(SQL9.format(user_id=request.user.pk))
+
             context = {'bookings': bookings}
 
             return render(request, 'main/profile.html', context)
@@ -285,11 +307,13 @@ class PasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChange
 
 def payment(request, pk):
     context = {}
+    b = Booking.objects.raw(SQL12.format(user_id=request.user.pk, pk=pk))
     b = get_object_or_404(Booking, pk=pk)
     price_sum = b.booking_session.session_price * len(b.booking_seats.all())
 
     if request.method == 'POST':
         if 'payment_submit' in request.POST:
+            p = Payment.objects.raw(SQL13.format(now=str(datetime.now()), pk=pk))
             p = Payment(payment_is_done=True, payment_date=datetime.now(), payment_info=f'Booking pk = {pk}')
             p.save()
 
