@@ -28,6 +28,7 @@ the session.
 * Python 3.10
 * Django 4.0.1
 * Bootstrap 5
+* MySQL 8
 
 ## Usage:
 1. Clone this repository
