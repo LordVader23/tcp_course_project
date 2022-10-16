@@ -11,6 +11,7 @@ from django.db.models.expressions import RawSQL
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 
 from django.core.paginator import Paginator
@@ -20,7 +21,7 @@ from django.db import connection
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
 
-from .models import MovieSession, Booking, Seats, Status, Payment
+from .models import Moviesession, Booking, Seats, Status, Payment
 from .forms import FilterForm, RegisterUserForm, ChangeInfoForm, LoginUserForm, BookingForm
 
 from datetime import datetime
@@ -28,7 +29,7 @@ import datetime as just_datetime
 
 
 def index(request):
-    mss = MovieSession.objects.all().exclude(session_date__lte=datetime.now()).order_by('-session_date')
+    mss = Moviesession.objects.all().exclude(session_date__lte=timezone.now()).order_by('-session_date')
     initial = {}  # To initialize form
     get_copy = request.GET.copy()
 
@@ -74,7 +75,7 @@ def index(request):
 
 
 def detail(request, pk):
-    ms = get_object_or_404(MovieSession, pk=pk)
+    ms = get_object_or_404(Moviesession, pk=pk)
     form = BookingForm()
 
     if request.POST and request.user.is_authenticated:
@@ -86,11 +87,11 @@ def detail(request, pk):
 
                 if request.POST.get('description'):
                     b = Booking(booking_owner=request.user, booking_session=ms, booking_status=status,
-                                booking_description=request.POST.get('description'), booking_date=datetime.now())
+                                booking_description=request.POST.get('description'), booking_date=timezone.now())
                     b.save()
                 else:
                     b = Booking(booking_owner=request.user, booking_session=ms,
-                                booking_status=status, booking_date=datetime.now())
+                                booking_status=status, booking_date=timezone.now())
                     b.save()
 
                 # adding seats
@@ -174,7 +175,7 @@ def profile(request):
 
     for b in bookings:
         if b.booking_payment is None or not b.booking_payment.payment_is_done:
-            diff = b.booking_session.session_date.replace(tzinfo=None) - datetime.now()
+            diff = b.booking_session.session_date.replace(tzinfo=None) - datetime.now()  # Idk
             diff = int(diff.total_seconds())
             if diff < 0 or (diff / 60) < 60:
                 b.booking_status = Status.objects.get(status_name='Отменен')
@@ -266,7 +267,7 @@ def payment(request, pk):
 
     if request.method == 'POST':
         if 'payment_submit' in request.POST:
-            p = Payment(payment_is_done=True, payment_date=datetime.now(), payment_info=f'Booking pk = {pk}')
+            p = Payment(payment_is_done=True, payment_date=timezone.now(), payment_info=f'Booking pk = {pk}')
             p.save()
 
             b.booking_payment = p

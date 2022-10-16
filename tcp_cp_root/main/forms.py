@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 
-from .models import Genre
+from .models import Genres
 
 from .widgets import DateInput
 
@@ -12,7 +12,7 @@ class FilterForm(forms.Form):
     keyword = forms.CharField(required=False, max_length=20, label='Ключевое слово',
                               widget=forms.TextInput(attrs={'placeholder': 'Поиск'}))
     date = forms.DateField(required=False, label='Дата премьеры', widget=DateInput)
-    genre = forms.ModelChoiceField(queryset=Genre.objects.all(), label='Жанр', required=False)
+    genre = forms.ModelChoiceField(queryset=Genres.objects.all(), label='Жанр', required=False)
 
 
 class RegisterUserForm(forms.ModelForm):
@@ -63,6 +63,7 @@ class LoginUserForm(forms.Form):
 
 class ChangeInfoForm(forms.ModelForm):
     email = forms.EmailField(required=True, label='Адрес ел. почты')
+    birthday = forms.DateField(label='Дата рождения')
 
     class Meta:
         model = User
