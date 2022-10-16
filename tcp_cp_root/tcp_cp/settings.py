@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'tcp_cp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'tcpdb',
+        'NAME': 'cw1_innodb',
         'USER': 'root',
-        'PASSWORD': '74561',
+        'PASSWORD': 'Artem74561',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -132,3 +132,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+AUTH_USER_MODEL = 'main.Users'
