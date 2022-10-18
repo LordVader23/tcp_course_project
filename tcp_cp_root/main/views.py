@@ -29,7 +29,7 @@ import datetime as just_datetime
 
 
 def index(request):
-    mss = Moviesession.objects.all().exclude(session_date__lte=timezone.now()).order_by('-session_date')
+    mss = Moviesession.objects.all().exclude(date__lte=timezone.now()).order_by('-date')
     initial = {}  # To initialize form
     get_copy = request.GET.copy()
 
