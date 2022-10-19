@@ -23,13 +23,13 @@ class Booking(models.Model):
     description = models.CharField(max_length=200, blank=True, null=True, verbose_name='Описание')
     session = models.ForeignKey('Moviesession', models.CASCADE, verbose_name='Сеанс')
     status = models.ForeignKey('Status', models.CASCADE, verbose_name='Статус')
-    seats = models.ManyToManyField("Seats", verbose_name='Бронируемые места')
+    seats = models.ManyToManyField("Seats", verbose_name='Бронируемые места', db_table='booking_seats')
 
     def __str__(self):
         return f'User {self.user.username} on date {self.date}'
 
     def get_seats(self):
-        return ", ".join([str(s.seat_number) for s in self.seats.all()])
+        return ", ".join([str(s.number) for s in self.seats.all()])
 
     def get_amount_seats(self):
         return len(self.seats.all())
@@ -50,7 +50,7 @@ class Booking(models.Model):
 
 
 class BookingSeats(models.Model):
-    seat = models.OneToOneField('Seats', models.DO_NOTHING, primary_key=True, verbose_name='Место')
+    seat = models.OneToOneField('Seats', models.DO_NOTHING, verbose_name='Место')
     booking = models.ForeignKey(Booking, models.DO_NOTHING, verbose_name='Бронирование')
 
     class Meta:
@@ -114,13 +114,13 @@ class Movie(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name='Описание')
     image = models.ImageField(upload_to='movieImgs/', default='movieImgs/default.png', verbose_name='Изображение')
     rate = models.FloatField(verbose_name='Рейтинг')
-    movie_genres = models.ManyToManyField('Genres', verbose_name='Жанры')
+    movie_genres = models.ManyToManyField('Genres', verbose_name='Жанры', db_table='movie_genre')
 
     def __str__(self):
         return f'{self.title}'
 
     def get_genres_str(self):
-        return ', '.join(g.name for g in self.movie_genres.all())
+        return ', '.join(g.title for g in self.movie_genres.all())
 
     class Meta:
         managed = True
@@ -130,16 +130,16 @@ class Movie(models.Model):
 
 
 class MovieGenre(models.Model):
-    movie = models.OneToOneField(Movie, models.DO_NOTHING, primary_key=True, verbose_name='Фильм')
-    genre = models.ForeignKey(Genres, models.DO_NOTHING, verbose_name='Жанр')
+    movie_id = models.OneToOneField(Movie, models.DO_NOTHING, verbose_name='Фильм')
+    genres_id = models.ForeignKey(Genres, models.DO_NOTHING, verbose_name='Жанр', db_column='genres_id')
 
-    def __str__(self):
-        return 'Movie {} - genre {}'.format(self.movie.title, self.genre.title)
+    # def __str__(self):
+    #     return 'Movie {} - genre {}'.format(self.movie.title, self.genre.title)
 
     class Meta:
         managed = False
         db_table = 'movie_genre'
-        unique_together = (('movie', 'genre'),)
+        unique_together = (('movie_id', 'genres_id'),)
 
 
 class Moviesession(models.Model):
@@ -186,10 +186,10 @@ class Payment(models.Model):
 
 class Seats(models.Model):
     seat_id = models.AutoField(primary_key=True)
-    seat_number = models.IntegerField(verbose_name='Номер места')
+    number = models.IntegerField(verbose_name='Номер места')
 
     def __str__(self):
-        return self.seat_number
+        return self.number
 
     class Meta:
         managed = False
@@ -200,10 +200,10 @@ class Seats(models.Model):
 
 class Status(models.Model):
     status_id = models.AutoField(primary_key=True)
-    status_name = models.CharField(max_length=100, verbose_name='Статус')
+    name = models.CharField(max_length=100, verbose_name='Статус')
 
     def __str__(self):
-        return self.status_name
+        return self.name
 
     class Meta:
         managed = False

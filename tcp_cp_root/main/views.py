@@ -64,7 +64,7 @@ def index(request):
     else:
         page_num = 1
 
-    paginator = Paginator(mss, 7)
+    paginator = Paginator(mss, 10)
     page = paginator.get_page(page_num)
     num_pages = paginator.num_pages
 
@@ -83,22 +83,22 @@ def detail(request, pk):
             form = BookingForm(request.POST)
             if form.is_valid():
                 seats_l = [int(i) for i in form.cleaned_data.get('seats')]
-                status = Status.objects.filter(Q(status_name='Новый'))[0]
+                status = Status.objects.filter(Q(name='Новый'))[0]
 
                 if request.POST.get('description'):
-                    b = Booking(booking_owner=request.user, booking_session=ms, booking_status=status,
-                                booking_description=request.POST.get('description'), booking_date=timezone.now())
+                    b = Booking(user=request.user, session=ms, status=status,
+                                description=request.POST.get('description'), date=timezone.now())
                     b.save()
                 else:
-                    b = Booking(booking_owner=request.user, booking_session=ms,
-                                booking_status=status, booking_date=timezone.now())
+                    b = Booking(user=request.user, session=ms,
+                                status=status, date=timezone.now())
                     b.save()
 
                 # adding seats
                 for seat in seats_l:
-                    seat_obj = Seats(seats_number=seat)
+                    seat_obj = Seats(number=seat)
                     seat_obj.save()
-                    b.booking_seats.add(seat_obj)
+                    b.seats.add(seat_obj)
 
                 return HttpResponseRedirect(reverse_lazy('main:profile'))
 
@@ -171,11 +171,11 @@ def login(request, template_name='registration/login.html',
 # Profile views -----------------------------------------------------------------------
 @login_required
 def profile(request):
-    bookings = Booking.objects.filter(booking_owner=request.user.pk)
+    bookings = Booking.objects.filter(user=request.user.pk)
 
     for b in bookings:
-        if b.booking_payment is None or not b.booking_payment.payment_is_done:
-            diff = b.booking_session.session_date.replace(tzinfo=None) - datetime.now()  # Idk
+        if b.payment is None or not b.payment.is_done:
+            diff = b.session.date.replace(tzinfo=None) - datetime.now()  # Idk
             diff = int(diff.total_seconds())
             if diff < 0 or (diff / 60) < 60:
                 b.booking_status = Status.objects.get(status_name='Отменен')
@@ -189,7 +189,7 @@ def profile(request):
             b = get_object_or_404(Booking, pk=pk)
             b.delete()
 
-            bookings = Booking.objects.filter(booking_owner=request.user.pk)
+            bookings = Booking.objects.filter(user=request.user.pk)
             context = {'bookings': bookings}
 
             return render(request, 'main/profile.html', context)
@@ -263,14 +263,14 @@ class PasswordChangeView(SuccessMessageMixin, LoginRequiredMixin, PasswordChange
 def payment(request, pk):
     context = {}
     b = get_object_or_404(Booking, pk=pk)
-    price_sum = b.booking_session.session_price * len(b.booking_seats.all())
+    price_sum = b.session.price * len(b.seats.all())
 
     if request.method == 'POST':
         if 'payment_submit' in request.POST:
-            p = Payment(payment_is_done=True, payment_date=timezone.now(), payment_info=f'Booking pk = {pk}')
+            p = Payment(is_done=True, date=timezone.now(), info=f'Booking pk = {pk}')
             p.save()
 
-            b.booking_payment = p
+            b.payment = p
             b.save()
 
             return redirect('main:profile')

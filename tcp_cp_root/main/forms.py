@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 
-from .models import Genres
+from .models import Genres, Users
 
 from .widgets import DateInput
 
@@ -51,7 +51,7 @@ class RegisterUserForm(forms.ModelForm):
         return user
 
     class Meta:
-        model = User
+        model = Users
         fields = ('username', 'email', 'password1', 'password2', 'first_name', 'last_name')
 
 
@@ -66,7 +66,7 @@ class ChangeInfoForm(forms.ModelForm):
     birthday = forms.DateField(label='Дата рождения')
 
     class Meta:
-        model = User
+        model = Users
         fields = ('username', 'email', 'first_name', 'last_name')
 
 
