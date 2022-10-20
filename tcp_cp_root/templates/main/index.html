@@ -22,17 +22,17 @@
         {% for ms in page %}
         <div class="movie_block">
             <a class="movie_img float-left d-inline-block text-decoration-none" href="{% url 'main:detail' pk=ms.pk %}">
-                <img src="{{ ms.session_movie.movie_image.url }}" class=""  alt="..." width="200px">
+                <img src="{{ ms.movie.image.url }}" class=""  alt="..." width="200px">
             </a>
             <div class="movie_details float-left d-inline-block align-top mt-1" style="margin-left: 15px">
                 <a href="{% url 'main:detail' pk=ms.pk %}" class="text-decoration-none">
-                    {{ ms.session_movie.movie_title }}
+                    {{ ms.movie.title }}
                 </a>
                 <p class="genre">
-                    {{ ms.session_movie.get_genres_str }}
+                    {{ ms.movie.get_genres_str }}
                 </p>
                 <p class="date">
-                    {{ ms.session_movie.movie_year }} год
+                    {{ ms.movie.year }} год
                 </p>
             </div>
         </div>

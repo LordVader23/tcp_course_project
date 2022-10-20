@@ -6,28 +6,28 @@
 
 <div class="content " style="width: 70%; min-height: 600px">
     <div class="movie_block float-left">
-        <h1 style="margin-top: 15px; margin-bottom: 15px">{{ ms.session_movie.movie_title }}</h1>
+        <h1 style="margin-top: 15px; margin-bottom: 15px">{{ ms.movie.title }}</h1>
         <div class="movie_image float-left d-inline-block">
-            <img src="{{ ms.session_movie.movie_image.url }}" class=""  alt="..." width="200px">
+            <img src="{{ ms.movie.image.url }}" class=""  alt="..." width="200px">
         </div>
 
         <div class="movie_details float-left d-inline-block align-top mt-1" style="margin-left: 15px">
             <p class="genre">
-                Жанры: {{ ms.session_movie.get_genres_str }}
+                Жанры: {{ ms.movie.get_genres_str }}
             </p>
             <p class="date">
-                Год выхода: {{ ms.session_movie.movie_year }} год
+                Год выхода: {{ ms.movie.year }} год
             </p>
             <p class="countries">
-                Страна: {{ ms.session_movie.movie_country }}
+                Страна: {{ ms.movie.country }}
             </p>
             <p class="duration">
-                {% if ms.session_movie.movie_duration == 60 %}
+                {% if ms.movie.duration == 60 %}
                     Продолжительность: 1 ч.
-                {% elif  ms.session_movie.movie_duration < 60 %}
-                    Продолжительность: {{ ms.session_movie.movie_duration }} мин.
+                {% elif  ms.movie.duration < 60 %}
+                    Продолжительность: {{ ms.movie.duration }} мин.
                 {% else %}
-                    Продолжительность: {{ ms.session_movie.movie_duration|div_nr:60 }} ч. {{ ms.session_movie.movie_duration|modulo:60 }} мин.
+                    Продолжительность: {{ ms.movie.duration|div_nr:60 }} ч. {{ ms.movie.duration|modulo:60 }} мин.
                 {% endif %}
             </p>
         </div>
@@ -42,7 +42,7 @@
         </nav>
         <div class="tab-content mt-2" id="nav-tabContent">
             <div class="tab-pane fade" id="nav-description" role="tabpanel" aria-labelledby="nav-description-tab">
-                {{ ms.session_movie.movie_description }}
+                {{ ms.movie.description }}
             </div>
             <div class="tab-pane fade show active" id="nav-booking" role="tabpanel" aria-labelledby="nav-booking-tab">
                 <div class="seats" style="margin-top: 20px">
@@ -68,8 +68,8 @@
                          </div>
                     {% endfor %}
                 </div>
-                <p>Цена: {{ ms.session_price }} грн</p>
-                <p>Дата и время: {{ ms.session_date }}</p>
+                <p>Цена: {{ ms.price }} грн</p>
+                <p>Дата и время: {{ ms.date }}</p>
                 {% if user.is_authenticated %}
                     <form method='post'>
                         {% csrf_token %}

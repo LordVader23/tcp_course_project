@@ -22,15 +22,15 @@
 						{% for booking in bookings %}
 							<div class="user_booking">
 								<div class="b_in">
-                                    <p><h2>{{ booking.booking_code }}</h2></p>
-                                    <p>Статус: <b>{{ booking.booking_status }}</b></p>
+                                    <p><h2>{{ booking.code }}</h2></p>
+                                    <p>Статус: <b>{{ booking.status }}</b></p>
                                     <p>
                                         <span class="movie_title d-inline-block">
                                             Сеанс:
-                                            <a href="{% url 'main:detail' pk=booking.booking_session.pk %}" class="text-decoration-none">
-                                                {{ booking.booking_session.session_movie.movie_title }}
+                                            <a href="{% url 'main:detail' pk=booking.session.pk %}" class="text-decoration-none">
+                                                {{ booking.session.movie.title }}
                                                 -
-                                                {{ booking.booking_session.session_date }}
+                                                {{ booking.session.date }}
                                             </a>
                                         </span>
                                     </p>
@@ -39,11 +39,11 @@
                                             Места: {{ booking.get_seats }}
                                         </span>
                                         <span class="payment d-inline-block mx-2">
-                                            Сумма: {{ booking.booking_session.session_price|multi:booking.get_amount_seats }}
+                                            Сумма: {{ booking.session.price|multi:booking.get_amount_seats }}
                                         </span>
                                         <span class="payment d-inline-block mx-2">
-                                            {% if booking.booking_payment %}
-                                                {% if booking.booking_payment.payment_is_done %}
+                                            {% if booking.payment %}
+                                                {% if booking.payment.is_done %}
                                                     <span class="text-success">Оплачено</span>
                                                 {% else %}
                                                     Не оплачено
@@ -52,10 +52,10 @@
                                                 Не оплачено
                                             {% endif %}
                                         </span>
-                                        {% if booking.booking_status.status_name == "Подтвержден" %}
+                                        {% if booking.status.name == "Підтверджен" %}
 
-                                            {% if booking.booking_payment %}
-                                                {% if not booking.booking_payment.payment_is_done %}
+                                            {% if booking.payment %}
+                                                {% if not booking.payment.is_done %}
                                                     <span class="payment d-inline-block mx-2">
                                                         <a href="{% url 'main:payment' pk=booking.pk %}" class="text-decoration-none">Оплатить</a>
                                                     </span>
@@ -68,11 +68,11 @@
 
                                         {% endif %}
                                     </p>
-                                        {% if booking.booking_description %}
-                                            <p>Примечание: {{ booking.booking_description }}</p>
+                                        {% if booking.description %}
+                                            <p>Примечание: {{ booking.description }}</p>
                                         {% endif %}
 
-                                    {% if booking.booking_status.status_name != 'Отменен' %}
+                                    {% if booking.status.name != 'Відхилен' %}
                                         <!--        Button trigger modal                       -->
                                         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                             Отменить бронирование
@@ -95,9 +95,9 @@
                                                             <input type='hidden' value='{{booking.pk}}' name='booking_pk'>
                                                             Вы действительно хотитет удалить бронирование
                                                             <br>
-                                                            {{ booking.booking_session.session_movie.movie_title }}
+                                                            {{ booking.session.movie.title }}
                                                             -
-                                                            {{ booking.booking_session.session_date }}
+                                                            {{ booking.session.date }}
                                                             <br>
                                                             места: {{ booking.get_seats }}
                                                         </div>
