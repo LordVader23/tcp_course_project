@@ -50,13 +50,13 @@ class Booking(models.Model):
 
 
 class BookingSeats(models.Model):
-    seat = models.OneToOneField('Seats', models.DO_NOTHING, verbose_name='Место')
-    booking = models.ForeignKey(Booking, models.DO_NOTHING, verbose_name='Бронирование')
+    seats_id = models.OneToOneField('Seats', models.DO_NOTHING, verbose_name='Место')
+    booking_id = models.ForeignKey(Booking, models.DO_NOTHING, verbose_name='Бронирование')
 
     class Meta:
         managed = False
         db_table = 'booking_seats'
-        unique_together = (('seat', 'booking'),)
+        unique_together = (('seats_id', 'booking_id'),)
 
 
 class Cinema(models.Model):
@@ -131,7 +131,7 @@ class Movie(models.Model):
 
 class MovieGenre(models.Model):
     movie_id = models.OneToOneField(Movie, models.DO_NOTHING, verbose_name='Фильм')
-    genres_id = models.ForeignKey(Genres, models.DO_NOTHING, verbose_name='Жанр', db_column='genres_id')
+    genres_id = models.ForeignKey(Genres, models.DO_NOTHING, verbose_name='Жанр')
 
     # def __str__(self):
     #     return 'Movie {} - genre {}'.format(self.movie.title, self.genre.title)
@@ -155,8 +155,8 @@ class Moviesession(models.Model):
 
         :return: list with booked seats
         """
-        q = Q(booking_status__status_name='Подтвержден')
-        return [seat.seat_number for b_obj in self.booking_set.filter(q) for seat in b_obj.seats.all()]
+        q = Q(status__name='Підтверджен')
+        return [seat.number for b_obj in self.booking_set.filter(q) for seat in b_obj.seats.all()]
 
     def __str__(self):
         return 'Session {} on {}'.format(self.movie.title, self.date)
@@ -189,7 +189,7 @@ class Seats(models.Model):
     number = models.IntegerField(verbose_name='Номер места')
 
     def __str__(self):
-        return self.number
+        return str(self.number)
 
     class Meta:
         managed = False

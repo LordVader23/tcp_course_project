@@ -267,7 +267,7 @@ def payment(request, pk):
 
     if request.method == 'POST':
         if 'payment_submit' in request.POST:
-            p = Payment(is_done=True, date=timezone.now(), info=f'Booking pk = {pk}')
+            p = Payment(is_done=True, date=timezone.now())
             p.save()
 
             b.payment = p

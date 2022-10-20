@@ -17,7 +17,7 @@ class MovieAdm(admin.ModelAdmin):
     list_max_show_all = 100
 
     def get_genres(self, obj):
-        return "\n".join([g.title for g in obj.movie_genres.all()])
+        return ", ".join([g.title for g in obj.movie_genres.all()])
 
     def get_img(self, obj):
         if obj.image:
@@ -47,10 +47,10 @@ class BookingAdm(admin.ModelAdmin):
 
 
 class MovieSessionAdm(admin.ModelAdmin):
-    list_display = ('movie', 'date', 'price', 'get_booked_seats')
+    list_display = ('movie', 'date', 'price', 'cinema', 'get_booked_seats')
     list_display_links = ('movie',)
-    fields = ('movie', 'date', 'price')
-    list_filter = ('movie', 'date')
+    fields = ('movie', 'date', 'price', 'cinema', 'comment')
+    list_filter = ('movie', 'date', 'cinema')
     list_per_page = 10
     list_max_show_all = 100
 
@@ -99,6 +99,7 @@ admin.site.register(Cinema, CinemaAdm)
 admin.site.register(Users, UsersAdm)
 admin.site.register(Genres)
 admin.site.register(Status)
+admin.site.register(Seats)
 admin.site.register(Payment)
 admin.site.register(City)
 
