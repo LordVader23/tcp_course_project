@@ -22,14 +22,18 @@
                 Страна: {{ ms.movie.country }}
             </p>
             <p class="duration">
-                {% if ms.movie.duration == 60 %}
-                    Продолжительность: 1 ч.
+                {% if ms.movie.duration|modulo:60 == 0 %}
+                    Продолжительность: {{ ms.movie.duration|div_nr:60 }} ч.
                 {% elif  ms.movie.duration < 60 %}
                     Продолжительность: {{ ms.movie.duration }} мин.
                 {% else %}
                     Продолжительность: {{ ms.movie.duration|div_nr:60 }} ч. {{ ms.movie.duration|modulo:60 }} мин.
                 {% endif %}
             </p>
+            <p class="rate">
+                <span class="fa fa-star" style="color: orange"><span style="color: black">{{ ms.movie.rate }}</span></span>
+            </p>
+
         </div>
     </div>
 
@@ -45,26 +49,40 @@
                 {{ ms.movie.description }}
             </div>
             <div class="tab-pane fade show active" id="nav-booking" role="tabpanel" aria-labelledby="nav-booking-tab">
+                <div class="cinema-info">
+                    <p>Город: {{ ms.cinema.city.name }}</p>
+                    <p>Кинотеатр: {{ ms.cinema.name }}</p>
+                </div>
                 <div class="seats" style="margin-top: 20px">
-                    <div class="screen text-center" style="margin-bottom: 25px; margin-left: 10px; width: 400px; height: 20px; background-color: lightgoldenrodyellow;">Экран</div>
+<!--                    <div class="screen text-center" style="margin-bottom: 25px; margin-left: 10px; width: 400px; height: 20px; background-color: lightgoldenrodyellow;">Экран</div>-->
+                    <div class="row justify-content-md-center">
+                        <div class="col-lg-8 screen text-center">Экран</div>
+                    </div>
+
 
                     {% for seat_row in seats %}
-                         <div class="seats row" style="margin-bottom: 15px">
-                             {% for seat in seat_row %}
-                                {% if seat <= 21 %}
-                                    {% if seat in b_seats %}
-                                        <div class="seat text-center" style="background-color: red; width: 50px; height: 25px; margin-right: 15px;">{{ seat }}</div>
+                         <div class="seats row justify-content-lg-center" style="margin-bottom: 15px">
+                             <div class="col-lg-8 row justify-content-lg-center gx-2">
+                                 {% for seat in seat_row %}
+                                    {% if seat <= 21 %}
+                                        {% if seat in b_seats %}
+<!--                                            <div class="seat text-center" style="background-color: red; width: 50px; height: 25px; margin-right: 15px;">{{ seat }}</div>-->
+                                            <div class="col-lg-1 seat seat-red text-center">{{ seat }}</div>
+                                        {% else %}
+<!--                                            <div class="seat text-center" style="background-color: green; width: 50px; height: 25px; margin-right: 15px;">{{ seat }}</div>-->
+                                            <div class="col-lg-1 seat seat-green text-center">{{ seat }}</div>
+                                        {% endif %}
                                     {% else %}
-                                        <div class="seat text-center" style="background-color: green; width: 50px; height: 25px; margin-right: 15px;">{{ seat }}</div>
+                                        {% if seat in b_seats %}
+<!--                                            <div class="seat text-center" style="background-color: red; width: 50px; height: 25px; margin-left: 15px">{{ seat }}</div>-->
+                                            <div class="col-lg-1 seat seat-red text-center">{{ seat }}</div>
+                                        {% else %}
+<!--                                            <div class="seat text-center" style="background-color: green; width: 50px; height: 25px; margin-left: 15px">{{ seat }}</div>-->
+                                            <div class="col-lg-1 seat seat-green text-center">{{ seat }}</div>
+                                        {% endif %}
                                     {% endif %}
-                                {% else %}
-                                    {% if seat in b_seats %}
-                                        <div class="seat text-center" style="background-color: red; width: 50px; height: 25px; margin-left: 15px">{{ seat }}</div>
-                                    {% else %}
-                                        <div class="seat text-center" style="background-color: green; width: 50px; height: 25px; margin-left: 15px">{{ seat }}</div>
-                                    {% endif %}
-                                {% endif %}
-                             {% endfor %}
+                                {% endfor %}
+                             </div>
                          </div>
                     {% endfor %}
                 </div>

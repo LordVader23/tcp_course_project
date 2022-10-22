@@ -20,20 +20,29 @@
 
     <div class="movie_list float-left">
         {% for ms in page %}
-        <div class="movie_block">
-            <a class="movie_img float-left d-inline-block text-decoration-none" href="{% url 'main:detail' pk=ms.pk %}">
+        <div class="movie_block row d-flex">
+            <a class="movie_img col-lg-3 text-decoration-none" href="{% url 'main:detail' pk=ms.pk %}">
                 <img src="{{ ms.movie.image.url }}" class=""  alt="..." width="200px">
             </a>
-            <div class="movie_details float-left d-inline-block align-top mt-1" style="margin-left: 15px">
+            <div class="movie_details col-lg-4 ms-4 align-top mt-1" style="margin-left: 15px">
                 <a href="{% url 'main:detail' pk=ms.pk %}" class="text-decoration-none">
                     {{ ms.movie.title }}
                 </a>
                 <p class="genre">
                     {{ ms.movie.get_genres_str }}
                 </p>
+                <p class="country">
+                    {{ ms.movie.country }}
+                </p>
                 <p class="date">
                     {{ ms.movie.year }} год
                 </p>
+                <p class="cinema">
+                    Кинотеатр: {{ ms.cinema.name}} - {{ ms.cinema.city.name }}
+                </p>
+            </div>
+            <div class="col d-flex justify-content-end mt-4">
+                <span class="fa fa-star fa-lg" style="color: orange"><span style="color: black">{{ ms.movie.rate }}</span></span>
             </div>
         </div>
         <hr>
