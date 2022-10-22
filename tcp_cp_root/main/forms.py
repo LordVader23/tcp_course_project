@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import password_validation
 from django.core.exceptions import ValidationError
 
-from .models import Genres, Users
+from .models import Genres, Users, Cinema
 
 from .widgets import DateInput
 
@@ -13,6 +13,7 @@ class FilterForm(forms.Form):
                               widget=forms.TextInput(attrs={'placeholder': 'Поиск'}))
     date = forms.DateField(required=False, label='Дата премьеры', widget=DateInput)
     genre = forms.ModelChoiceField(queryset=Genres.objects.all(), label='Жанр', required=False)
+    cinema = forms.ModelChoiceField(queryset=Cinema.objects.all(), label='Кинотеатр', required=False)
 
 
 class RegisterUserForm(forms.ModelForm):

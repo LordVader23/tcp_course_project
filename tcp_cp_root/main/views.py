@@ -38,7 +38,7 @@ def index(request):
             if request.GET[param]:
                 if param == 'keyword':
                     keyword = request.GET['keyword']
-                    q = Q(session_movie__movie_title__icontains=keyword)
+                    q = Q(movie__title__icontains=keyword)
                     mss = mss.filter(q)
                     initial['keyword'] = keyword
                 elif param == 'date':  # To find out if price_from bigger(or equal) than price_to
@@ -47,12 +47,16 @@ def index(request):
                     date_list = [int(i) for i in date_list]
                     dt_max = str(just_datetime.datetime(date_list[0], date_list[1], date_list[2], 23, 59, 59))
                     dt_min = str(just_datetime.datetime(date_list[0], date_list[1], date_list[2], 0, 0, 0))
-                    mss = mss.filter(session_date__range=(dt_min, dt_max))
+                    mss = mss.filter(date__range=(dt_min, dt_max))
                     initial['date'] = date
                 elif param == 'genre':
                     genre = request.GET['genre']
-                    mss = mss.filter(session_movie__movie_genres=genre)
+                    mss = mss.filter(movie__movie_genres=genre)
                     initial['genre'] = genre
+                elif param == 'cinema':
+                    cinema = request.GET['cinema']
+                    mss = mss.filter(cinema=cinema)
+                    initial['cinema'] = cinema
 
     if len(initial) > 0:
         form = FilterForm(initial=initial)
@@ -83,7 +87,11 @@ def detail(request, pk):
             form = BookingForm(request.POST)
             if form.is_valid():
                 seats_l = [int(i) for i in form.cleaned_data.get('seats')]
-                status = Status.objects.filter(Q(name='Новый'))[0]
+                booked_seats = ms.get_booked_seats()
+                if set(booked_seats) & set(seats_l):
+                    status = Status.objects.filter(Q(name='Відхилен'))[0]
+                else:
+                    status = Status.objects.filter(Q(name='Підтверджен'))[0]
 
                 if request.POST.get('description'):
                     b = Booking(user=request.user, session=ms, status=status,
