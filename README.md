@@ -1,5 +1,4 @@
 # tcp_course_project
-This project was done by me as a assignment for university coursework.
 ___
 **Theme**: Information system "Cinema" (ticket booking)\
 **Main business process**: The client places an order for booking
@@ -29,15 +28,6 @@ the session.
 * Django 4.0.1
 * Bootstrap 5
 * MySQL 8
-
-## Usage:
-1. Clone this repository
-2. python manage.py makemigrations
-3. python manage.py migrate
-4. To use admin panel run python manage.py createsuperuser
-5. python manage.py runserver
-
-Then go to http://127.0.0.1:8000 in your browser
 
 ## Screenshots:
 ### Home
